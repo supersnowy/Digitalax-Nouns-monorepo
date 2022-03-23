@@ -1,5 +1,5 @@
 {
-  "network": "mainnet",
+  "network": "matic",
   "nounsToken": {
     "address": "0x46ef874D5a7A56c8D3376438B1405322c6cB01E6",
     "startBlock": 26233505
@@ -9,7 +9,7 @@
     "startBlock": 26233522
   },
   "nounsDAO": {
-    "address": "0x5D72632b2082B225B1f27d5Cefc1E39c5C2aB39F",
+    "address": "0xfb4946edd524f0584f3c9758233c71005b05af58",
     "startBlock": 26233668
   }
 }
