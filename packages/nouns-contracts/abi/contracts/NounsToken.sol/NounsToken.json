@@ -523,6 +523,19 @@
   },
   {
     "inputs": [],
+    "name": "getTodaysDay",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "day",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "getTodaysUri",
     "outputs": [
       {
