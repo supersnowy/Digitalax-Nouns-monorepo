@@ -7,7 +7,6 @@ import { push } from 'connected-react-router';
 import { nounPath } from '../../utils/history';
 import useOnDisplayAuction from '../../wrappers/onDisplayAuction';
 import { useEffect } from 'react';
-import ProfileActivityFeed from '../../components/ProfileActivityFeed';
 
 interface AuctionPageProps {
   initialAuctionId?: number;
@@ -18,11 +17,10 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
   const onDisplayAuction = useOnDisplayAuction();
   const lastAuctionNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
   const onDisplayAuctionNounId = onDisplayAuction?.nounId.toNumber();
-
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (!lastAuctionNounId) return;
+    if (typeof lastAuctionNounId === 'undefined') return;
 
     if (initialAuctionId !== undefined) {
       // handle out of bounds noun path ids
@@ -37,7 +35,7 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
       }
     } else {
       // no noun path id set
-      if (lastAuctionNounId) {
+      if (typeof lastAuctionNounId !== 'undefined') {
         dispatch(setOnDisplayAuctionNounId(lastAuctionNounId));
       }
     }
@@ -45,12 +43,13 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
 
   return (
     <>
-      <Auction auction={onDisplayAuction} />
-      {onDisplayAuctionNounId && onDisplayAuctionNounId !== lastAuctionNounId ? (
+      <Auction auction={onDisplayAuction} isEthereum title={'Public Auction | Ethereum'} />
+      <Auction auction={onDisplayAuction} title={'Public Auction | Polygon'} />
+      {/* {onDisplayAuctionNounId && onDisplayAuctionNounId !== lastAuctionNounId ? (
         <ProfileActivityFeed nounId={onDisplayAuctionNounId} />
       ) : (
         <Banner />
-      )}
+      )} */}
       <Documentation />
     </>
   );

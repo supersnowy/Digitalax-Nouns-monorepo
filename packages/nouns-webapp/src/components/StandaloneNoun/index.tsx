@@ -1,5 +1,5 @@
-import { ImageData as data, getNounData } from '@nouns/assets';
-import { buildSVG } from '@nouns/sdk';
+import { ImageData as data, getNounData } from '@digitalax/nouns-assets';
+import { buildSVG } from '@digitalax/nouns-sdk';
 import { BigNumber as EthersBN } from 'ethers';
 import { INounSeed, useNounSeed } from '../../wrappers/nounToken';
 import Noun from '../Noun';
@@ -8,6 +8,7 @@ import classes from './StandaloneNoun.module.css';
 import { useDispatch } from 'react-redux';
 import { setOnDisplayAuctionNounId } from '../../state/slices/onDisplayAuction';
 import nounClasses from '../Noun/Noun.module.css';
+import { Auction } from '../../wrappers/nounsAuction';
 
 interface StandaloneNounProps {
   nounId: EthersBN;
@@ -20,6 +21,8 @@ interface StandaloneNounWithSeedProps {
   nounId: EthersBN;
   onLoadSeed?: (seed: INounSeed) => void;
   shouldLinkToProfile: boolean;
+  isEthereum?: boolean;
+  auction?: Auction;
 }
 
 const getNoun = (nounId: string | EthersBN, seed: INounSeed) => {
@@ -89,32 +92,39 @@ export const StandaloneNounCircular: React.FC<StandaloneCircularNounProps> = (
 export const StandaloneNounWithSeed: React.FC<StandaloneNounWithSeedProps> = (
   props: StandaloneNounWithSeedProps,
 ) => {
-  const { nounId, onLoadSeed, shouldLinkToProfile } = props;
+  const { auction, nounId, onLoadSeed, shouldLinkToProfile, isEthereum = false } = props;
 
   const dispatch = useDispatch();
-  const seed = useNounSeed(nounId);
+  // const seed = useNounSeed(nounId);
 
-  if (!seed || !nounId || !onLoadSeed) return <Noun imgPath="" alt="Noun" />;
+  // if (!seed || !nounId || !onLoadSeed) return <Noun imgPath="" alt="Noun" />;
 
-  onLoadSeed(seed);
+  // onLoadSeed(seed);
 
-  const onClickHandler = () => {
-    dispatch(setOnDisplayAuctionNounId(nounId.toNumber()));
-  };
+  // const onClickHandler = () => {
+  //   dispatch(setOnDisplayAuctionNounId(nounId.toNumber()));
+  // };
 
-  const { image, description } = getNoun(nounId, seed);
-
-  const noun = <Noun imgPath={image} alt={description} />;
-  const nounWithLink = (
-    <Link
-      to={'/noun/' + nounId.toString()}
-      className={classes.clickableNoun}
-      onClick={onClickHandler}
-    >
-      {noun}
-    </Link>
+  // const { image, description } = getNoun(nounId, seed);
+  const noun = (
+    <Noun
+      isEthereum={isEthereum}
+      imgPath={auction?.image ?? auction?.animation ?? ''}
+      alt={auction?.name}
+      type={auction?.image ? 'image' : 'animation'}
+    />
   );
-  return shouldLinkToProfile ? nounWithLink : noun;
+  // const nounWithLink = (
+  //   <Link
+  //     to={'/noun/' + nounId.toString()}
+  //     className={classes.clickableNoun}
+  //     onClick={onClickHandler}
+  //   >
+  //     {noun}
+  //   </Link>
+  // );
+  // return shouldLinkToProfile ? nounWithLink : noun;
+  return noun;
 };
 
 export default StandaloneNoun;

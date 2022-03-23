@@ -5,6 +5,19 @@
   transition: all 0.15s ease-in-out;
 }
 
+.logo {
+  font-family: Armata;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 80px;
+  line-height: 100px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+
+  color: #1ee4ff;
+}
+
 .navBarBrand:hover {
   transform: scale(0.95);
 }
@@ -19,6 +32,11 @@
 }
 
 @media (max-width: 992px) {
+  .logo {
+    font-size: 50px;
+    line-height: 60px;
+  }
+
   .navBarLogo {
     width: 65px;
     height: 65px;
@@ -100,4 +118,8 @@
   height: 44px;
   padding: 0.25rem 0.5rem;
   margin-right: 12px;
+}
+
+.navBarToggle span {
+  filter: invert(1);
 }

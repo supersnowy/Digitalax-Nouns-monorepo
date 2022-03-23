@@ -4,7 +4,7 @@ import {
   NounsDescriptorFactory,
   NounsSeederFactory,
   NounsDaoLogicV1Factory,
-} from '@nouns/contracts';
+} from '@digitalax/nouns-contracts';
 
 export interface ContractAddresses {
   nounsToken: string;
@@ -33,4 +33,6 @@ export enum ChainId {
   Rinkeby = 4,
   Kovan = 42,
   Local = 31337,
+  Mumbai = 80001,
+  Polygon = 137,
 }

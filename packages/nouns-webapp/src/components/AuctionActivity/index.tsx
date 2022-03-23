@@ -1,7 +1,7 @@
 import { Auction } from '../../wrappers/nounsAuction';
 import { useState, useEffect } from 'react';
 import BigNumber from 'bignumber.js';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Card } from 'react-bootstrap';
 import classes from './AuctionActivity.module.css';
 import bidHistoryClasses from './BidHistory.module.css';
 import Bid from '../Bid';
@@ -23,6 +23,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import NounInfoCard from '../NounInfoCard';
 import { useAppSelector } from '../../hooks';
+import { black, primary } from '../../utils/nounBgColors';
+import AuctionDescription from '../AuctionDescription';
+import BlueClose from '../../assets/blue-close.png';
+import BlackClose from '../../assets/black-close.png';
 
 const openEtherscanBidHistory = () => {
   const url = buildEtherscanAddressLink(config.addresses.nounsAuctionHouseProxy);
@@ -36,6 +40,7 @@ interface AuctionActivityProps {
   onPrevAuctionClick: () => void;
   onNextAuctionClick: () => void;
   displayGraphDepComps: boolean;
+  isEthereum?: boolean;
 }
 
 const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityProps) => {
@@ -46,9 +51,8 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
     onPrevAuctionClick,
     onNextAuctionClick,
     displayGraphDepComps,
+    isEthereum = false,
   } = props;
-
-  const isCool = useAppSelector(state => state.application.isCoolBackground);
 
   const [auctionEnded, setAuctionEnded] = useState(false);
   const [auctionTimer, setAuctionTimer] = useState(false);
@@ -61,12 +65,7 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
     setShowBidHistoryModal(false);
   };
 
-  const bidHistoryTitle = (
-    <h1>
-      Noun {auction && auction.nounId.toString()}
-      <br /> Bid History
-    </h1>
-  );
+  // const bidHistoryTitle = <h1>Bid History</h1>;
 
   // timer logic - check auction status every 30 seconds, until five minutes remain, then check status every second
   useEffect(() => {
@@ -100,68 +99,86 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
           show={showBidHistoryModal}
           onHide={dismissBidModalHanlder}
           dialogClassName="modal-90w"
+          centered
         >
-          <Modal.Header closeButton className={classes.modalHeader}>
-            <div className={classes.modalHeaderNounImgWrapper}>
-              <StandaloneNoun nounId={auction && auction.nounId} />
-            </div>
-            <Modal.Title className={classes.modalTitleWrapper}>{bidHistoryTitle}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <BidHistory auctionId={auction.nounId.toString()} max={9999} />
-          </Modal.Body>
+          <Card style={{ background: isEthereum ? black : primary }}>
+            <Modal.Header className={classes.modalHeader}>
+              <Modal.Title
+                className={classes.modalTitleWrapper}
+                style={{ color: isEthereum ? primary : black }}
+              >
+                Bid History
+              </Modal.Title>
+              <button type="button" onClick={dismissBidModalHanlder} className={classes.modalClose}>
+                <img src={isEthereum ? BlueClose : BlackClose} />
+              </button>
+            </Modal.Header>
+            <Modal.Body className={classes.modalBodyWrapper}>
+              <BidHistory
+                isEthereum={isEthereum}
+                auctionId={auction.nounId.toString()}
+                max={9999}
+              />
+            </Modal.Body>
+          </Card>
         </Modal>
       )}
 
       <AuctionActivityWrapper>
         <div className={classes.informationRow}>
           <Row className={classes.activityRow}>
+            <Col lg={12}>
+              <AuctionActivityNounTitle
+                isEthereum={isEthereum}
+                name={auction.name}
+                nounId={auction.nounId}
+              />
+            </Col>
             <AuctionTitleAndNavWrapper>
               {displayGraphDepComps && (
                 <AuctionNavigation
+                  isEthereum={isEthereum}
                   isFirstAuction={isFirstAuction}
                   isLastAuction={isLastAuction}
                   onNextAuctionClick={onNextAuctionClick}
                   onPrevAuctionClick={onPrevAuctionClick}
                 />
               )}
-              <AuctionActivityDateHeadline startTime={auction.startTime} />
+              <AuctionActivityDateHeadline isEthereum={isEthereum} startTime={auction.startTime} />
             </AuctionTitleAndNavWrapper>
-            <Col lg={12}>
-              <AuctionActivityNounTitle isCool={isCool} nounId={auction.nounId} />
-            </Col>
           </Row>
-          <Row className={classes.activityRow}>
-            <Col lg={4} className={classes.currentBidCol}>
+          <div
+            className={classes.activityRow}
+            style={{ borderBottom: `1px solid ${isEthereum ? primary : black}` }}
+          >
+            <div className={classes.currentBidCol}>
               <CurrentBid
+                isEthereum={isEthereum}
                 currentBid={new BigNumber(auction.amount.toString())}
                 auctionEnded={auctionEnded}
               />
-            </Col>
-            <Col lg={6} className={classes.auctionTimerCol}>
+            </div>
+            <div className={classes.auctionTimerCol}>
               {auctionEnded ? (
-                <Winner winner={auction.bidder} />
+                <Winner winner={auction.bidder} isEthereum={isEthereum} />
               ) : (
-                <AuctionTimer auction={auction} auctionEnded={auctionEnded} />
+                <AuctionTimer
+                  auction={auction}
+                  isEthereum={isEthereum}
+                  auctionEnded={auctionEnded}
+                />
               )}
-            </Col>
+            </div>
+          </div>
+          <Row className={classes.activityRow}>
+            <AuctionDescription isEthereum={isEthereum} description={auction.description ?? ''} />
           </Row>
         </div>
-        {!auctionEnded && (
-          <Row className={classes.activityRow}>
-            <Col lg={12} className={classes.fomoNounsLink}>
-              <FontAwesomeIcon icon={faInfoCircle} />
-              <a href={'https://fomonouns.wtf'} target={'_blank'} rel="noreferrer">
-                Help mint the next Noun
-              </a>
-            </Col>
-          </Row>
-        )}
-        {isLastAuction && (
+        {isLastAuction && !auctionEnded && (
           <>
             <Row className={classes.activityRow}>
               <Col lg={12}>
-                <Bid auction={auction} auctionEnded={auctionEnded} />
+                <Bid auction={auction} isEthereum={isEthereum} auctionEnded={auctionEnded} />
               </Col>
             </Row>
           </>
@@ -171,11 +188,13 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
             {!isLastAuction ? (
               <NounInfoCard
                 nounId={auction.nounId.toNumber()}
+                isEthereum={isEthereum}
                 bidHistoryOnClickHandler={showBidModalHandler}
               />
             ) : (
               displayGraphDepComps && (
                 <BidHistory
+                  isEthereum={isEthereum}
                   auctionId={auction.nounId.toString()}
                   max={3}
                   classes={bidHistoryClasses}

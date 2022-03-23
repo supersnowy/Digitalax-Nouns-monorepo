@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
@@ -7,7 +7,7 @@ import { ChainId, DAppProvider } from '@usedapp/core';
 import { Web3ReactProvider } from '@web3-react/core';
 import { Web3Provider } from '@ethersproject/providers';
 import account from './state/slices/account';
-import application from './state/slices/application';
+import application, { setPrices } from './state/slices/application';
 import logs from './state/slices/logs';
 import auction, {
   reduxSafeAuction,
@@ -23,14 +23,14 @@ import onDisplayAuction, {
   setOnDisplayAuctionNounId,
 } from './state/slices/onDisplayAuction';
 import { ApolloProvider, useQuery } from '@apollo/client';
-import { clientFactory, latestAuctionsQuery } from './wrappers/subgraph';
+import { auctionQuery, clientFactory, latestAuctionsQuery } from './wrappers/subgraph';
 import { useEffect } from 'react';
 import pastAuctions, { addPastAuctions } from './state/slices/pastAuctions';
 import LogsUpdater from './state/updaters/logs';
-import config, { CHAIN_ID, createNetworkHttpUrl } from './config';
+import config, { CHAIN_ID, createNetworkHttpUrl, EXCHANGE_API } from './config';
 import { WebSocketProvider } from '@ethersproject/providers';
-import { BigNumber, BigNumberish } from 'ethers';
-import { NounsAuctionHouseFactory } from '@nouns/sdk';
+import { BigNumber, BigNumberish, ethers } from 'ethers';
+import { NounsAuctionHouseFactory } from '@digitalax/nouns-sdk';
 import dotenv from 'dotenv';
 import { useAppDispatch, useAppSelector } from './hooks';
 import { appendBid } from './state/slices/auction';
@@ -42,8 +42,16 @@ import { Provider } from 'react-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { nounPath } from './utils/history';
 import { push } from 'connected-react-router';
+import { Auction } from './wrappers/nounsAuction';
 
 dotenv.config();
+
+declare global {
+  interface Window {
+    web3: ethers.providers.Web3Provider;
+    ethereum: any;
+  }
+}
 
 export const history = createBrowserHistory();
 
@@ -85,6 +93,8 @@ const useDappConfig = {
     [ChainId.Rinkeby]: createNetworkHttpUrl('rinkeby'),
     [ChainId.Mainnet]: createNetworkHttpUrl('mainnet'),
     [ChainId.Hardhat]: 'http://localhost:8545',
+    [ChainId.Mumbai]: 'https://polygon-mumbai.g.alchemy.com/v2/ut-A8hy0NasKAOgsRwDbqgnaaay40zD6',
+    [ChainId.Polygon]: 'https://polygon-mainnet.g.alchemy.com/v2/l_-zZAI0v9EWjrG1dee494hg1XDh38A8'
   },
 };
 
@@ -102,15 +112,49 @@ const BLOCKS_PER_DAY = 6_500;
 
 const ChainSubscriber: React.FC = () => {
   const dispatch = useAppDispatch();
+  const wsProvider = new WebSocketProvider(config.app.wsRpcUri);
+  const nounsAuctionHouseContract = NounsAuctionHouseFactory.connect(
+    config.addresses.nounsAuctionHouseProxy,
+    wsProvider,
+  );
+  const [currentAuction, setCurrentAuction] = useState<Auction | undefined>();
+  const { data } = useQuery(auctionQuery(currentAuction?.nounId.toNumber() ?? 0), {
+    skip: !currentAuction?.nounId.toNumber(),
+  });
+
+  const fetchPrices = async () => {
+    const eth = await fetch(`${EXCHANGE_API}/simple/price?ids=ethereum&vs_currencies=usd`).then(
+      res => res.json(),
+    );
+    const mona = await fetch(`${EXCHANGE_API}/simple/price?ids=monavale&vs_currencies=usd`).then(
+      res => res.json(),
+    );
+    dispatch(setPrices({ eth: eth.ethereum.usd, mona: mona.monavale.usd }));
+  };
+
+  useEffect(() => {
+    if (data && data.auction && currentAuction) {
+      dispatch(setFullAuction(reduxSafeAuction(currentAuction)));
+      dispatch(setLastAuctionNounId(currentAuction.nounId.toNumber()));
+      dispatch(
+        setFullAuction({
+          ...currentAuction,
+          name: data.auction.noun.name,
+          description: data.auction.noun.description,
+          image: data.auction.noun.image,
+          animation: data.auction.noun.animation,
+        }),
+      );
+    }
+  }, [data, currentAuction]);
+
+  useEffect(() => {
+    loadState();
+    fetchPrices();
+  }, []);
 
   const loadState = async () => {
-    const wsProvider = new WebSocketProvider(config.app.wsRpcUri);
-    const nounsAuctionHouseContract = NounsAuctionHouseFactory.connect(
-      config.addresses.nounsAuctionHouseProxy,
-      wsProvider,
-    );
-
-    const bidFilter = nounsAuctionHouseContract.filters.AuctionBid(null, null, null, null);
+    const bidFilter = nounsAuctionHouseContract.filters.AuctionBidERC20(null, null, null, null);
     const extendedFilter = nounsAuctionHouseContract.filters.AuctionExtended(null, null);
     const createdFilter = nounsAuctionHouseContract.filters.AuctionCreated(null, null, null);
     const settledFilter = nounsAuctionHouseContract.filters.AuctionSettled(null, null, null);
@@ -149,9 +193,7 @@ const ChainSubscriber: React.FC = () => {
 
     // Fetch the current auction
     const currentAuction = await nounsAuctionHouseContract.auction();
-    dispatch(setFullAuction(reduxSafeAuction(currentAuction)));
-    dispatch(setLastAuctionNounId(currentAuction.nounId.toNumber()));
-
+    setCurrentAuction(currentAuction);
     // Fetch the previous 24hours of  bids
     const previousBids = await nounsAuctionHouseContract.queryFilter(bidFilter, 0 - BLOCKS_PER_DAY);
     for (let event of previousBids) {
@@ -172,7 +214,6 @@ const ChainSubscriber: React.FC = () => {
       processAuctionSettled(nounId, winner, amount),
     );
   };
-  loadState();
 
   return <></>;
 };
@@ -192,7 +233,6 @@ const PastAuctions: React.FC = () => {
 ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
-      <ChainSubscriber />
       <React.StrictMode>
         <Web3ReactProvider
           getLibrary={
@@ -200,6 +240,7 @@ ReactDOM.render(
           }
         >
           <ApolloProvider client={client}>
+            <ChainSubscriber />
             <PastAuctions />
             <DAppProvider config={useDappConfig}>
               <App />

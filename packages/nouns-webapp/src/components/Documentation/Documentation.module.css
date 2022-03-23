@@ -1,14 +1,32 @@
+.wrapper {
+  background: black;
+  padding: 5rem;
+}
+
+.headerWrapper {
+  margin-bottom: 4rem;
+}
+
 .headerWrapper h1 {
-  font-family: 'Londrina Solid';
-  font-size: 4rem;
+  font-family: Armata;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 4vw;
+  line-height: 5vw;
+  display: flex;
+  align-items: center;
+
+  color: #ffffff;
 }
 
 .headerWrapper p {
-  font-family: 'PT Root UI', sans-serif;
-  font-weight: 500;
-  letter-spacing: -0.25px;
-  line-height: 28px;
-  margin: 3rem 0;
+  font-family: Armata;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 2vw;
+  line-height: 3vw;
+
+  color: #ffffff;
 }
 
 .accordionItem {
@@ -17,12 +35,6 @@
   letter-spacing: -0.25px;
   line-height: 28px;
   font-size: 1.2rem !important;
-}
-
-@media (max-width: 992px) {
-  .headerWrapper {
-    padding: 1rem;
-  }
 }
 
 .accordionItem {
@@ -73,5 +85,19 @@
 @media (max-width: 992px) {
   .accordionHeader button {
     padding-left: 20px;
+  }
+
+  .wrapper {
+    padding: 1rem;
+  }
+
+  .headerWrapper h1 {
+    font-size: 25px;
+    line-height: 30px;
+  }
+
+  .headerWrapper p {
+    font-size: 16px;
+    line-height: 20px;
   }
 }

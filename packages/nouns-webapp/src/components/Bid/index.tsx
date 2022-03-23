@@ -1,18 +1,25 @@
 import { Auction, AuctionHouseContractFunction } from '../../wrappers/nounsAuction';
-import { connectContractToSigner, useEthers, useContractFunction } from '@usedapp/core';
+import {
+  connectContractToSigner,
+  useEthers,
+  useContractFunction,
+  useContractCall,
+} from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
 import React, { useEffect, useState, useRef, ChangeEvent, useCallback } from 'react';
-import { utils, BigNumber as EthersBN } from 'ethers';
+import { utils, BigNumber as EthersBN, ethers } from 'ethers';
 import BigNumber from 'bignumber.js';
 import classes from './Bid.module.css';
 import { Spinner, InputGroup, FormControl, Button, Col } from 'react-bootstrap';
 import { useAuctionMinBidIncPercentage } from '../../wrappers/nounsAuction';
 import { useAppDispatch } from '../../hooks';
 import { AlertModal, setAlertModal } from '../../state/slices/application';
-import { NounsAuctionHouseFactory } from '@nouns/sdk';
+import { NounsAuctionHouseFactory } from '@digitalax/nouns-sdk';
 import config from '../../config';
 import WalletConnectModal from '../WalletConnectModal';
 import SettleManuallyBtn from '../SettleManuallyBtn';
+import ERC20ABI from '../../libs/abi/ERC20.json';
+import { black, primary, white } from '../../utils/nounBgColors';
 
 const computeMinimumNextBid = (
   currentBid: BigNumber,
@@ -43,11 +50,12 @@ const currentBid = (bidInputRef: React.RefObject<HTMLInputElement>) => {
 
 const Bid: React.FC<{
   auction: Auction;
+  isEthereum?: boolean;
   auctionEnded: boolean;
 }> = props => {
   const activeAccount = useAppSelector(state => state.account.activeAccount);
   const { library } = useEthers();
-  let { auction, auctionEnded } = props;
+  let { auction, auctionEnded, isEthereum } = props;
 
   const nounsAuctionHouseContract = new NounsAuctionHouseFactory().attach(
     config.addresses.nounsAuctionHouseProxy,
@@ -60,7 +68,7 @@ const Bid: React.FC<{
   const [bidInput, setBidInput] = useState('');
   const [bidButtonContent, setBidButtonContent] = useState({
     loading: false,
-    content: auctionEnded ? 'Settle' : 'Place bid',
+    content: auctionEnded ? 'Settle' : auction.bidder !== activeAccount ? 'Place bid' : 'Withdraw',
   });
 
   const [showConnectModal, setShowConnectModal] = useState(false);
@@ -87,6 +95,16 @@ const Bid: React.FC<{
     AuctionHouseContractFunction.settleCurrentAndCreateNewAuction,
   );
 
+  const { ethereum } = window;
+  const web3Provider = new ethers.providers.Web3Provider(ethereum);
+  const monaContract = new ethers.Contract(
+    config.addresses.lidoToken ?? '',
+    ERC20ABI,
+    web3Provider,
+  );
+
+  const { send: approve, state: approveState } = useContractFunction(monaContract, 'approve');
+
   const bidInputHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const input = event.target.value;
 
@@ -98,7 +116,7 @@ const Bid: React.FC<{
     setBidInput(event.target.value);
   };
 
-  const placeBidHandler = async () => {
+  const confirmBid = async () => {
     if (!auction || !bidInputRef.current || !bidInputRef.current.value) {
       return;
     }
@@ -106,6 +124,7 @@ const Bid: React.FC<{
     if (currentBid(bidInputRef).isLessThan(minBid)) {
       setModal({
         show: true,
+        isEthereum,
         title: 'Insufficient bid amount 🤏',
         message: `Please place a bid higher than or equal to the minimum bid amount of ${minBidEth(
           minBid,
@@ -115,15 +134,35 @@ const Bid: React.FC<{
       return;
     }
 
+    setModal({
+      show: true,
+      isEthereum,
+      title: 'Confirm Bid',
+      message:
+        'Are you sure you want to place this bid? The contract is decentralised and you will not be able to withdraw your bid after placing it. If someone bids higher than you then you will be immediately refunded. ',
+      onSuccess: handlePlaceBid,
+    });
+  };
+
+  const handlePlaceBid = async () => {
+    if (!auction || !bidInputRef.current || !bidInputRef.current.value) {
+      return;
+    }
+
     const value = utils.parseEther(bidInputRef.current.value.toString());
     const contract = connectContractToSigner(nounsAuctionHouseContract, undefined, library);
     const gasLimit = await contract.estimateGas.createBid(0, auction.nounId, {
       value,
     });
-    placeBid(auction.nounId, {
-      value,
-      gasLimit: gasLimit.add(10_000), // A 10,000 gas pad is used to avoid 'Out of gas' errors
-    });
+    const approval: BigNumber = await monaContract.allowance(
+      account,
+      config.addresses.nounsAuctionHouseProxy,
+    );
+
+    if (utils.parseEther(approval.toString()) < utils.parseEther('1000000000'))
+      await approve(config.addresses.nounsAuctionHouseProxy, utils.parseEther('1000000000'));
+
+    placeBid(value, auction.nounId);
   };
 
   const settleAuctionHandler = () => {
@@ -148,6 +187,7 @@ const Bid: React.FC<{
       placeBidState.status = 'Success';
       setModal({
         title: 'Success',
+        isEthereum,
         message: `Bid was placed successfully!`,
         show: true,
       });
@@ -171,14 +211,25 @@ const Bid: React.FC<{
       case 'Fail':
         setModal({
           title: 'Transaction Failed',
+          isEthereum,
           message: placeBidState.errorMessage ? placeBidState.errorMessage : 'Please try again.',
           show: true,
         });
         setBidButtonContent({ loading: false, content: 'Bid' });
         break;
+      case 'Success':
+        setModal({
+          title: 'Success',
+          isEthereum,
+          message: `Bid was placed successfully!`,
+          show: true,
+        });
+        setBidButtonContent({ loading: false, content: 'Place bid' });
+        break;
       case 'Exception':
         setModal({
           title: 'Error',
+          isEthereum,
           message: placeBidState.errorMessage ? placeBidState.errorMessage : 'Please try again.',
           show: true,
         });
@@ -202,14 +253,16 @@ const Bid: React.FC<{
       case 'Success':
         setModal({
           title: 'Success',
-          message: `Settled auction successfully!`,
+          isEthereum,
+          message: `Success! Your bid was placed. You can withdraw your bid at anytime. If you are outbid your funds are sent back to your wallet. Good luck!`,
           show: true,
         });
-        setBidButtonContent({ loading: false, content: 'Settle Auction' });
+        setBidButtonContent({ loading: false, content: 'Withdraw' });
         break;
       case 'Fail':
         setModal({
           title: 'Transaction Failed',
+          isEthereum,
           message: settleAuctionState.errorMessage
             ? settleAuctionState.errorMessage
             : 'Please try again.',
@@ -220,6 +273,7 @@ const Bid: React.FC<{
       case 'Exception':
         setModal({
           title: 'Error',
+          isEthereum,
           message: settleAuctionState.errorMessage
             ? settleAuctionState.errorMessage
             : 'Please try again.',
@@ -235,7 +289,7 @@ const Bid: React.FC<{
   const isDisabled =
     placeBidState.status === 'Mining' || settleAuctionState.status === 'Mining' || !activeAccount;
 
-  const minBidCopy = `Ξ ${minBidEth(minBid)} or more`;
+  const minBidCopy = `${minBidEth(minBid)} MONA or more`;
   const fomoNounsBtnOnClickHandler = () => {
     // Open Fomo Nouns in a new tab
     window.open('https://fomonouns.wtf', '_blank')?.focus();
@@ -251,11 +305,18 @@ const Bid: React.FC<{
       <InputGroup>
         {!auctionEnded && (
           <>
-            <span className={classes.customPlaceholderBidAmt}>
+            <span
+              style={{ color: isEthereum ? primary : black }}
+              className={classes.customPlaceholderBidAmt}
+            >
               {!auctionEnded && !bidInput ? minBidCopy : ''}
             </span>
             <FormControl
               className={classes.bidInput}
+              style={{
+                backgroundColor: isEthereum ? 'rgba(30, 228, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)',
+                color: isEthereum ? 'rgba(30, 228, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)',
+              }}
               type="number"
               min="0"
               onChange={bidInputHandler}
@@ -266,25 +327,29 @@ const Bid: React.FC<{
         )}
         {!auctionEnded ? (
           <Button
+            style={{
+              backgroundColor: isEthereum ? primary : black,
+              color: isEthereum ? black : white,
+            }}
             className={auctionEnded ? classes.bidBtnAuctionEnded : classes.bidBtn}
-            onClick={auctionEnded ? settleAuctionHandler : placeBidHandler}
+            onClick={auctionEnded ? settleAuctionHandler : confirmBid}
             disabled={isDisabled}
           >
             {bidButtonContent.loading ? <Spinner animation="border" /> : bidButtonContent.content}
           </Button>
         ) : (
           <>
-            <Col lg={12} className={classes.voteForNextNounBtnWrapper}>
+            {/* <Col lg={12} className={classes.voteForNextNounBtnWrapper}>
               <Button className={classes.bidBtnAuctionEnded} onClick={fomoNounsBtnOnClickHandler}>
                 Vote for the next Noun ⌐◧-◧
               </Button>
-            </Col>
+            </Col> */}
             {/* Only show force settle button if wallet connected */}
-            {isWalletConnected && (
+            {/* {isWalletConnected && (
               <Col lg={12}>
                 <SettleManuallyBtn settleAuctionHandler={settleAuctionHandler} auction={auction} />
               </Col>
-            )}
+            )} */}
           </>
         )}
       </InputGroup>
