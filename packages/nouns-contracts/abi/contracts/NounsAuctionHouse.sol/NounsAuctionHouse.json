@@ -81,6 +81,12 @@
         "internalType": "uint256",
         "name": "endTime",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "anticipatedNoun",
+        "type": "string"
       }
     ],
     "name": "AuctionCreated",
@@ -167,6 +173,25 @@
       }
     ],
     "name": "AuctionTimeBufferUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "nounId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "nounMintedTokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "AuctionTokenMinted",
     "type": "event"
   },
   {

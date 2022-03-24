@@ -34,9 +34,6 @@ type Bid @entity {
   "Bid transaction hash"
   id: ID!
 
-  "The Noun being bid on"
-  noun: Noun!
-
   "Bid amount"
   amount: BigInt!
 
@@ -57,11 +54,11 @@ type Bid @entity {
 }
 
 type Auction @entity {
-  "The Noun's ERC721 token id"
+  "The Noun's auction id"
   id: ID!
 
   "The Noun"
-  noun: Noun!
+  noun: Noun
 
   "The current highest bid amount"
   amount: BigInt!
