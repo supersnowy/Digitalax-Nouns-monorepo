@@ -44,6 +44,17 @@ export const auctionQuery = (auctionId: number) => gql`
 				id
 			}
 	  }
+		anticipatedNoun {
+			id
+			name
+			description
+			image
+			animation
+			attributes {
+				trait
+				value
+			}
+		}
 	  bids {
 			id
 			blockNumber
@@ -121,6 +132,17 @@ export const latestAuctionsQuery = () => gql`
         tokenUri
         owner {
           id
+        }
+      }
+      anticipatedNoun {
+        id
+        name
+        description
+        image
+        animation
+        attributes {
+          trait
+          value
         }
       }
       bids {

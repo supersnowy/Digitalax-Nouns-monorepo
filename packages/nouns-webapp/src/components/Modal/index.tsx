@@ -30,7 +30,7 @@ const ModalOverlay: React.FC<{
         <button
           type="button"
           className={classes.confirm}
-          style={{ background: isEthereum ? primary : black }}
+          style={{ background: isEthereum ? primary : black, color: isEthereum ? black : primary }}
           onClick={onSuccess}
         >
           {' '}

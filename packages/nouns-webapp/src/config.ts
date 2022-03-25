@@ -70,7 +70,7 @@ const app: Record<SupportedChains, AppConfig> = {
   [ChainId.Polygon]: {
     jsonRpcUri: 'https://polygon-mainnet.g.alchemy.com/v2/l_-zZAI0v9EWjrG1dee494hg1XDh38A8',
     wsRpcUri: 'wss://polygon-mainnet.g.alchemy.com/v2/l_-zZAI0v9EWjrG1dee494hg1XDh38A8',
-    subgraphApiUri: '',
+    subgraphApiUri: 'https://api.thegraph.com/subgraphs/name/digitalax/nouns-subgraph-matic',
     enableHistory: true,
   },
 };
@@ -102,6 +102,8 @@ const getAddresses = (): ContractAddresses => {
   }
   return { ...nounsAddresses, ...externalAddresses[CHAIN_ID] };
 };
+
+console.log({ CHAIN_ID });
 
 const config = {
   app: app[CHAIN_ID],
