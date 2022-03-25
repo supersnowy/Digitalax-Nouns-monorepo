@@ -30,12 +30,29 @@ type Noun @entity {
   votes: [Vote!]! @derivedFrom(field: "nouns")
 }
 
+type AnticipatedNoun @entity {
+  "The Noun's ERC721 token id"
+  id: ID!
+
+  "The token uri used to determine the Noun's traits"
+  tokenUri: String
+
+  name: String
+
+  description: String
+
+  animation: String
+
+  image: String
+
+  attributes: [NounAttributes!]
+}
+
 type Bid @entity {
   "Bid transaction hash"
   id: ID!
 
-  "The Noun being bid on"
-  noun: Noun!
+  anticipatedNoun: AnticipatedNoun!
 
   "Bid amount"
   amount: BigInt!
@@ -54,14 +71,20 @@ type Bid @entity {
 
   "The timestamp of the block the bid is in"
   blockTimestamp: BigInt!
+
+  "Is it erc20 bid"
+  isERC20: Boolean!
 }
 
 type Auction @entity {
-  "The Noun's ERC721 token id"
+  "The Noun's auction id"
   id: ID!
 
   "The Noun"
-  noun: Noun!
+  noun: Noun
+
+  "The anticipated noun info"
+  anticipatedNoun: AnticipatedNoun!
 
   "The current highest bid amount"
   amount: BigInt!

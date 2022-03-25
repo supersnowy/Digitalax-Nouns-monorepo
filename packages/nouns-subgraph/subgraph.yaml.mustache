@@ -25,14 +25,18 @@ dataSources:
         - name: NounsAuctionHouse
           file: ../nouns-contracts/abi/contracts/NounsAuctionHouse.sol/NounsAuctionHouse.json
       eventHandlers:
-        - event: AuctionCreated(indexed uint256,uint256,uint256)
+        - event: AuctionCreated(indexed uint256,uint256,uint256,string)
           handler: handleAuctionCreated
         - event: AuctionBidERC20(indexed uint256,address,uint256,bool)
           handler: handleAuctionBidERC20
+        - event: AuctionBid(indexed uint256,address,uint256,bool)
+          handler: handleAuctionBid
         - event: AuctionExtended(indexed uint256,uint256)
           handler: handleAuctionExtended
         - event: AuctionSettled(indexed uint256,address,uint256)
           handler: handleAuctionSettled
+        - event: AuctionTokenMinted(indexed uint256,indexed uint256)
+          handler: handleAuctionTokenMinted
   - kind: ethereum/contract
     name: NounsToken
     network: {{network}}

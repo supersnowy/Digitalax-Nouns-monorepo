@@ -230,6 +230,25 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "anticipateNoun",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "uri",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "to",
         "type": "address"
@@ -516,6 +535,19 @@
         "internalType": "uint96",
         "name": "",
         "type": "uint96"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getTodaysDay",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "day",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -878,6 +910,19 @@
       }
     ],
     "name": "setNoundersDAO",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_startTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "setStartTime",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
