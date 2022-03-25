@@ -1,6 +1,6 @@
 {
   "name": "@digitalax/nouns-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Useful tooling for interacting with the Nouns protocol",
   "author": "haruto-digi",
   "homepage": "https://nouns.wtf",
@@ -14,7 +14,7 @@
     "test": "mocha -r ts-node/register \"test/**/*.test.ts\""
   },
   "dependencies": {
-    "@digitalax/nouns-contracts": "^0.1.0",
+    "@digitalax/nouns-contracts": "^0.1.1",
     "ethers": "^5.4.7",
     "tsc": "^2.0.4",
     "typescript": "^4.6.2"
