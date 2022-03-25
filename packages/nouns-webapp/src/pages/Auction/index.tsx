@@ -43,7 +43,7 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
 
   return (
     <>
-      <Auction auction={onDisplayAuction} isEthereum title={'Public Auction | Ethereum'} />
+      {/* <Auction auction={onDisplayAuction} isEthereum title={'Public Auction | Ethereum'} /> */}
       <Auction auction={onDisplayAuction} title={'Public Auction | Polygon'} />
       {/* {onDisplayAuctionNounId && onDisplayAuctionNounId !== lastAuctionNounId ? (
         <ProfileActivityFeed nounId={onDisplayAuctionNounId} />

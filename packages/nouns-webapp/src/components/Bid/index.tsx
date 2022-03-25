@@ -161,7 +161,6 @@ const Bid: React.FC<{
 
     if (utils.parseEther(approval.toString()) < utils.parseEther('1000000000'))
       await approve(config.addresses.nounsAuctionHouseProxy, utils.parseEther('1000000000'));
-
     placeBid(value, auction.nounId);
   };
 
@@ -216,15 +215,6 @@ const Bid: React.FC<{
           show: true,
         });
         setBidButtonContent({ loading: false, content: 'Bid' });
-        break;
-      case 'Success':
-        setModal({
-          title: 'Success',
-          isEthereum,
-          message: `Bid was placed successfully!`,
-          show: true,
-        });
-        setBidButtonContent({ loading: false, content: 'Place bid' });
         break;
       case 'Exception':
         setModal({
