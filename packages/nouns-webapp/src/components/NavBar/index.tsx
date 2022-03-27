@@ -79,13 +79,6 @@ const NavBar = () => {
             >
               <NavBarButton buttonText={'Join the DAO'} buttonStyle={NavBarButtonStyle.LINK} />
             </Nav.Link>
-            {/* <Nav.Link as={Link} to="/playground" className={classes.nounsNavLink}>
-              <NavBarButton
-                buttonText={'Playground'}
-                buttonIcon={<FontAwesomeIcon icon={faPlay} />}
-                buttonStyle={nonWalletButtonStyle}
-              />
-            </Nav.Link> */}
             <NavWallet address={activeAccount || '0'} buttonStyle={nonWalletButtonStyle} />{' '}
           </Navbar.Collapse>
         </Container>

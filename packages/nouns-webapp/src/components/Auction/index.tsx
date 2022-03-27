@@ -66,7 +66,7 @@ const Auction: React.FC<AuctionProps> = props => {
     <AuctionActivity
       isEthereum={isEthereum}
       auction={currentAuction}
-      isFirstAuction={currentAuction.nounId.eq(0)}
+      isFirstAuction={currentAuction.nounId.eq(1)}
       isLastAuction={currentAuction.nounId.eq(lastNounId)}
       onPrevAuctionClick={prevAuctionHandler}
       onNextAuctionClick={nextAuctionHandler}
@@ -78,7 +78,7 @@ const Auction: React.FC<AuctionProps> = props => {
       isEthereum={isEthereum}
       mintTimestamp={currentAuction.startTime}
       nounId={currentAuction.nounId}
-      isFirstAuction={currentAuction.nounId.eq(0)}
+      isFirstAuction={currentAuction.nounId.eq(1)}
       isLastAuction={currentAuction.nounId.eq(lastNounId)}
       onPrevAuctionClick={prevAuctionHandler}
       onNextAuctionClick={nextAuctionHandler}

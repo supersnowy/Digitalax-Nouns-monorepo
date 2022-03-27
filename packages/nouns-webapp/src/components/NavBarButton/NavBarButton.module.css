@@ -1,6 +1,5 @@
 .wrapper {
   height: 40px;
-  border-radius: 10px;
   font-size: 16px;
   line-height: 16px;
   font-family: 'PT Root UI';
@@ -68,10 +67,9 @@
 }
 
 .coolWallet {
-  background-color: var(--brand-cool-accent);
-  border: 1px solid var(--brand-cool-border);
-  border-radius: 10px;
-  color: var(--brand-warm-dark-text);
+  background-color: transparent;
+  border: 1px solid white;
+  color: white;
   padding: 0px 12px 0px 12px;
   transition: all 0.2s ease-in-out;
 }
@@ -110,8 +108,8 @@
 
 .whiteInfo,
 .whiteWallet {
-  background-color: white;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: transparent;
+  border: 1px solid white!important;
   color: rgb(95, 95, 95);
 }
 

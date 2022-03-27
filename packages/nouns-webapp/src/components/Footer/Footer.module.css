@@ -1,5 +1,6 @@
 .wrapper {
   background: black;
+  padding-bottom: 1rem;
 }
 .container {
   display: flex;
@@ -34,15 +35,19 @@
     font-size: 50px;
     line-height: 60px;
   }
+
+  .description {
+    text-align: center!important;
+  }
 }
 
 .description {
   font-family: Armata;
   font-style: normal;
-  font-weight: normal;
+  font-weight: bold;
   font-size: 20px;
   line-height: 25px;
-  text-align: center;
+  text-align: left;
 
   color: #1ee4ff;
 }
@@ -67,8 +72,13 @@
 .footerSignature a {
   text-decoration: none;
   color: #1ee4ff;
-  margin: 8px 14px;
+  padding: 0px 14px;
+  border-right: 1px solid #1ee4ff;
   transition: all 0.15s ease-in-out;
+}
+
+.footerSignature a:last-child {
+  border-right: 0;
 }
 
 .footerSignature a:hover {
