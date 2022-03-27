@@ -114,7 +114,7 @@ export const nounsIndex = () => gql`
 
 export const latestAuctionsQuery = () => gql`
   {
-    auctions(orderBy: startTime, orderDirection: desc, first: 1000) {
+    auctions(orderBy: startTime, orderDirection: desc, first: 1000, where: { id_not: "0" }) {
       id
       amount
       settled

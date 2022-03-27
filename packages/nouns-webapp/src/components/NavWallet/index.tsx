@@ -136,22 +136,6 @@ const NavWallet: React.FC<NavWalletProps> = props => {
         aria-labelledby={props.labeledBy}
       >
         <div>
-          <div
-            onClick={switchWalletHandler}
-            className={clsx(
-              classes.dropDownTop,
-              classes.button,
-              classes.switchWalletText,
-              usePickByState(
-                classes.whiteInfoSelectedTop,
-                classes.coolInfoSelected,
-                classes.warmInfoSelected,
-                history,
-              ),
-            )}
-          >
-            Switch wallet
-          </div>
 
           <div
             onClick={disconectWalletHandler}
@@ -189,16 +173,6 @@ const NavWallet: React.FC<NavWalletProps> = props => {
       </div>
 
       <div className={`d-flex flex-row ${classes.connectContentMobileText}`}>
-        <div
-          style={{
-            borderRight: `1px solid ${mobileBorderColor}`,
-            color: mobileTextColor,
-          }}
-          className={classes.mobileSwitchWalletText}
-          onClick={switchWalletHandler}
-        >
-          Switch
-        </div>
         <div className={classes.disconnectText} onClick={disconectWalletHandler}>
           Sign out
         </div>
