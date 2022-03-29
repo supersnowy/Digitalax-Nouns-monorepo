@@ -202,6 +202,7 @@ describe('NounsAuctionHouse', () => {
 
     await ethers.provider.send('evm_setNextBlockTimestamp', [endTime.sub(60 * 5).toNumber()]); // Subtract 5 mins from current end time
 
+    await nounsAuctionHouse.connect(deployer).toggleFreezeERC20Bid();
     const tx = nounsAuctionHouse.connect(bidderA).createBid(0,nounId, {
       value: RESERVE_PRICE,
     });
@@ -262,8 +263,6 @@ describe('NounsAuctionHouse', () => {
 
     const { nounId } = await nounsAuctionHouse.auction();
 
-
-
     await ethers.provider.send('evm_increaseTime', [60 * 60 * 1]); // Add 1 hours
     // Change this to use the erc20 token...
     // Need to mint weth
@@ -273,6 +272,7 @@ describe('NounsAuctionHouse', () => {
     console.log('balance 1');
     console.log(await weth.balanceOf(nounsAuctionHouse.address));
     console.log(await weth.balanceOf(bidderA.address));
+    await nounsAuctionHouse.connect(deployer).toggleFreezeETHBid();
 
     // Need to approve weth
     await nounsAuctionHouse.connect(bidderA).createBid(10000, nounId);

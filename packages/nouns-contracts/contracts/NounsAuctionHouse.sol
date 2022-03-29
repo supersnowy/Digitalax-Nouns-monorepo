@@ -685,7 +685,7 @@ contract NounsAuctionHouse is INounsAuctionHouse, PausableUpgradeable, Reentranc
      * @notice Create a bid for a Noun, with a given amount.
      * @dev This contract only accepts payment in ETH.
      */
-    function createBid(uint256 useERC20, uint256 nounId) external payable override nonReentrant {
+     function createBid(uint256 useERC20, uint256 nounId) external payable override nonReentrant {
         INounsAuctionHouse.Auction storage _auction = auction;
 
         require(_auction.nounId == nounId, 'Noun not up for auction');
@@ -693,10 +693,14 @@ contract NounsAuctionHouse is INounsAuctionHouse, PausableUpgradeable, Reentranc
         if(useERC20 == 0){
             require(!freezeETHBid, "ETH bids are currently frozen");
             require(msg.value >= reservePrice, 'Must send at least reservePrice');
-            require(
-                msg.value >= _auction.amount + ((_auction.amount * minBidIncrementPercentage) / 100),
-                'Must send more than last bid by minBidIncrementPercentage amount'
-            );
+            if(_auction.lastBidType == 2){
+                uint256 auctionAmount = _estimateETHAmount(_auction.amount);
+                 require(msg.value >=  auctionAmount + ((auctionAmount * minBidIncrementPercentage) / 100),
+                'Must send more than last erc20 bid by minBidIncrementPercentage amount');
+            } else if(_auction.lastBidType == 1) {
+                require(msg.value >=  _auction.amount + ((_auction.amount * minBidIncrementPercentage) / 100),
+                'Must send more than last bid by minBidIncrementPercentage amount');
+            }
         } else {
             require(!freezeERC20Bid, "ERC20 bids are currently frozen");
             uint256 minEthValue;
@@ -706,6 +710,7 @@ contract NounsAuctionHouse is INounsAuctionHouse, PausableUpgradeable, Reentranc
                 minEthValue = reservePrice;
             }
             uint256 erc20Value = _estimateERC20Amount(minEthValue);
+            require(useERC20 >= minEthValue, "Bid not high enough");
             require(monaToken.allowance(msg.sender, address(this)) >= erc20Value, "Insufficient allowance");
             require(monaToken.balanceOf(msg.sender) >= erc20Value, "Insufficient balance");
         }
