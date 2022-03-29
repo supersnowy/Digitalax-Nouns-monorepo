@@ -11,8 +11,8 @@ import { BIGINT_ONE, BIGINT_ZERO, ZERO_ADDRESS } from './utils/constants';
 import { getGovernanceEntity, getOrCreateDelegate, getOrCreateAccount } from './utils/helpers';
 
 export function handleNounCreated(event: NounCreated): void {
-  let nounId = event.params.tokenId.toString();
   let contract = NounsTokenContract.bind(event.address);
+  let nounId = event.params.tokenId.toString();
 
   let noun = Noun.load(nounId);
   if (noun == null) {
