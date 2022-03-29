@@ -51,7 +51,7 @@ const Documentation = () => {
             <br />
             <br />
             Every 24 hours a new cc0 NFT goes to public auction on Ethereum with a reserve and can
-            bid on to be owned by you. The cc0 NFTs placed on auction are curated by the DAO and
+            be bid on to be owned by you. The cc0 NFTs placed on auction are curated by the DAO and
             represent far more than just their content display. They are also access keys into the
             DA0, representative of your voting weight within governance, curation and staking
             settings.
@@ -61,7 +61,7 @@ const Documentation = () => {
         <div className={classes.headerWrapper}>
           <h1>What is the difference between the public and DAO only auction? </h1>
           <p className={classes.aboutText}>
-            If an auction reserve is not met for the public auction on Ethereum, this NFT put for
+            If an auction reserve is not met for the public auction on Ethereum, this NFT is put up for
             auction on Polygon Network in a DAO only bid setting. This means that you must be a
             member of the DAO to bid and hold $CC0 token to bid with. $CC0 token is distributed to
             members of the DAO.

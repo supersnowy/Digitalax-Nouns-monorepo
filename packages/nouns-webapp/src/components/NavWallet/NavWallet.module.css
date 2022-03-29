@@ -1,6 +1,5 @@
 .wrapper {
   height: 40px;
-  border-radius: 10px;
   font-size: 16px;
   line-height: 16px;
   font-family: 'PT Root UI';
@@ -30,7 +29,7 @@
   text-overflow: ellipsis;
   min-height: 18px;
   line-height: 20px;
-  color: black !important;
+  color: white!important;
 }
 
 @media (max-width: 330px) {
@@ -71,12 +70,17 @@
 
 .coolInfo {
   color: #79809c;
-  background-color: #e9ebf3;
+  border: 1px solid white;
+  border-radius: 0!important;
 }
 
 .coolInfo:hover {
   background-color: white;
   color: black;
+}
+
+.coolInfo:hover .address {
+  color: black!important;
 }
 
 .coolWallet {
@@ -110,13 +114,18 @@
 }
 
 .whiteInfo {
-  background-color: white;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: transparent!important;
+  background: transparent!important;
+  border: 1px solid white!important;
   color: rgb(95, 95, 95);
 }
 
 .whiteInfo:hover {
   background-color: #e2e3e8;
+  color: black;
+}
+
+.whiteInfo:hover .address {
   color: black;
 }
 
@@ -250,6 +259,10 @@
   color: black;
 }
 
+.dropdownActive .address {
+  color: black!important;
+}
+
 .dropDownTop {
   border-radius: 10px 10px 0px 0px;
   padding-top: 0.65rem;
@@ -266,11 +279,10 @@
 }
 
 .dropDownBottom {
-  border-radius: 0px 0px 10px 10px;
   padding-bottom: 0.65rem;
   padding-top: 0.5rem;
   padding-left: 1rem;
   justify-content: flex-start;
-  color: var(--brand-color-red);
-  margin-left: 4px;
+  color: black;
+  background: white!important;
 }

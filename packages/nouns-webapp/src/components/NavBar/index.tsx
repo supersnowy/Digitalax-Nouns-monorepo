@@ -52,14 +52,19 @@ const NavBar = () => {
           </div>
           <Navbar.Toggle className={classes.navBarToggle} aria-controls="basic-navbar-nav" />
           <Navbar.Collapse className="justify-content-end">
-            <Nav.Link as={Link} to="/vote" className={classes.nounsNavLink}>
+            <Nav.Link
+              target="_blank"
+              rel="noreferrer"
+              href="https://docs.cc0dao.xyz/"
+              className={classes.nounsNavLink}
+            >
               <NavBarButton
                 buttonText={'Read the Documentation'}
                 buttonStyle={NavBarButtonStyle.LINK}
               />
             </Nav.Link>
             <Nav.Link
-              href={externalURL(ExternalURL.notion)}
+              href={'https://refactory.cc0dao.xyz/'}
               className={classes.nounsNavLink}
               target="_blank"
               rel="noreferrer"
@@ -67,20 +72,13 @@ const NavBar = () => {
               <NavBarButton buttonText={'Contribute CC0'} buttonStyle={NavBarButtonStyle.LINK} />
             </Nav.Link>
             <Nav.Link
-              href={externalURL(ExternalURL.discourse)}
+              href={'https://docs.cc0dao.xyz/join-the-dao'}
               className={classes.nounsNavLink}
               target="_blank"
               rel="noreferrer"
             >
               <NavBarButton buttonText={'Join the DAO'} buttonStyle={NavBarButtonStyle.LINK} />
             </Nav.Link>
-            {/* <Nav.Link as={Link} to="/playground" className={classes.nounsNavLink}>
-              <NavBarButton
-                buttonText={'Playground'}
-                buttonIcon={<FontAwesomeIcon icon={faPlay} />}
-                buttonStyle={nonWalletButtonStyle}
-              />
-            </Nav.Link> */}
             <NavWallet address={activeAccount || '0'} buttonStyle={nonWalletButtonStyle} />{' '}
           </Navbar.Collapse>
         </Container>

@@ -14,7 +14,7 @@ import classes from './WalletConnectModal.module.css';
 const WalletConnectModal: React.FC<{ onDismiss: () => void }> = props => {
   const { onDismiss } = props;
   const { activate } = useEthers();
-  const supportedChainIds = [CHAIN_ID];
+  const supportedChainIds = [CHAIN_ID, 80001, 1, 2, 3, 5];
 
   const wallets = (
     <div className={classes.walletConnectModal}>

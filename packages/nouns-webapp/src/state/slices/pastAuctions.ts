@@ -13,14 +13,15 @@ const initialState: PastAuctionsState = {
 const reduxSafePastAuctions = (data: any): AuctionState[] => {
   const auctions = data.data.auctions as any[];
   if (auctions.length < 0) return [];
+  console.log({ auctions });
   const pastAuctions: AuctionState[] = auctions.map(auction => {
     return {
       activeAuction: {
         amount: BigNumber.from(auction.amount).toJSON(),
-        description: auction.noun.description,
-        name: auction.noun.name,
-        image: auction.noun.image,
-        animation: auction.noun.animation,
+        description: auction.anticipatedNoun.description,
+        name: auction.anticipatedNoun.name,
+        image: auction.anticipatedNoun.image,
+        animation: auction.anticipatedNoun.animation,
         bidder: auction.bidder ? auction.bidder.id : '',
         startTime: BigNumber.from(auction.startTime).toJSON(),
         endTime: BigNumber.from(auction.endTime).toJSON(),

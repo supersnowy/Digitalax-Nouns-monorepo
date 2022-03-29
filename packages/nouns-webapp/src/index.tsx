@@ -139,10 +139,10 @@ const ChainSubscriber: React.FC = () => {
       dispatch(
         setFullAuction({
           ...currentAuction,
-          name: data.auction.noun.name,
-          description: data.auction.noun.description,
-          image: data.auction.noun.image,
-          animation: data.auction.noun.animation,
+          name: data.auction.anticipatedNoun.name,
+          description: data.auction.anticipatedNoun.description,
+          image: data.auction.anticipatedNoun.image,
+          animation: data.auction.anticipatedNoun.animation,
         }),
       );
     }
@@ -156,7 +156,7 @@ const ChainSubscriber: React.FC = () => {
   const loadState = async () => {
     const bidFilter = nounsAuctionHouseContract.filters.AuctionBidERC20(null, null, null, null);
     const extendedFilter = nounsAuctionHouseContract.filters.AuctionExtended(null, null);
-    const createdFilter = nounsAuctionHouseContract.filters.AuctionCreated(null, null, null);
+    const createdFilter = nounsAuctionHouseContract.filters.AuctionCreated(null, null, null, null);
     const settledFilter = nounsAuctionHouseContract.filters.AuctionSettled(null, null, null);
     const processBidFilter = async (
       nounId: BigNumberish,
