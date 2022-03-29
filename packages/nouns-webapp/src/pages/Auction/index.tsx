@@ -7,6 +7,8 @@ import { push } from 'connected-react-router';
 import { nounPath } from '../../utils/history';
 import useOnDisplayAuction from '../../wrappers/onDisplayAuction';
 import { useEffect } from 'react';
+import { useEthers } from '@usedapp/core';
+import { CHAIN_ID } from '../../config';
 
 interface AuctionPageProps {
   initialAuctionId?: number;
@@ -14,6 +16,7 @@ interface AuctionPageProps {
 
 const AuctionPage: React.FC<AuctionPageProps> = props => {
   const { initialAuctionId } = props;
+  const { chainId } = useEthers();
   const onDisplayAuction = useOnDisplayAuction();
   const lastAuctionNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
   const onDisplayAuctionNounId = onDisplayAuction?.nounId.toNumber();
@@ -41,10 +44,13 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
     }
   }, [lastAuctionNounId, dispatch, initialAuctionId, onDisplayAuction]);
 
+  const title = chainId === CHAIN_ID ? 'DAO Only Auction | Polygon' : 'Public Auction | Ethereum';
+  const isEthereum = chainId === CHAIN_ID ? false : true;
+
   return (
     <>
-      {/* <Auction auction={onDisplayAuction} isEthereum title={'Public Auction | Ethereum'} /> */}
-      <Auction auction={onDisplayAuction} title={'Public Auction | Polygon'} />
+      {/* <Auction auction={onDisplayAuction} title={'Public Auction | Ethereum'} /> */}
+      <Auction auction={onDisplayAuction} isEthereum={isEthereum} title={title} />
       {/* {onDisplayAuctionNounId && onDisplayAuctionNounId !== lastAuctionNounId ? (
         <ProfileActivityFeed nounId={onDisplayAuctionNounId} />
       ) : (

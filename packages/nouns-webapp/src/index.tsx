@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { ChainId, DAppProvider } from '@usedapp/core';
+import { ChainId, DAppProvider, useEthers } from '@usedapp/core';
 import { Web3ReactProvider } from '@web3-react/core';
 import { Web3Provider } from '@ethersproject/providers';
 import account from './state/slices/account';
@@ -27,7 +27,14 @@ import { auctionQuery, clientFactory, latestAuctionsQuery } from './wrappers/sub
 import { useEffect } from 'react';
 import pastAuctions, { addPastAuctions } from './state/slices/pastAuctions';
 import LogsUpdater from './state/updaters/logs';
-import config, { CHAIN_ID, createNetworkHttpUrl, EXCHANGE_API } from './config';
+import config, {
+  CHAIN_ID,
+  createNetworkHttpUrl,
+  EXCHANGE_API,
+  getCurrentConfig,
+  mainnetConfig,
+  MAINNET_CHAIN_ID,
+} from './config';
 import { WebSocketProvider } from '@ethersproject/providers';
 import { BigNumber, BigNumberish, ethers } from 'ethers';
 import { NounsAuctionHouseFactory } from '@digitalax/nouns-sdk';
@@ -98,8 +105,6 @@ const useDappConfig = {
   },
 };
 
-const client = clientFactory(config.app.subgraphApiUri);
-
 const Updaters = () => {
   return (
     <>
@@ -112,15 +117,19 @@ const BLOCKS_PER_DAY = 6_500;
 
 const ChainSubscriber: React.FC = () => {
   const dispatch = useAppDispatch();
-  const wsProvider = new WebSocketProvider(config.app.wsRpcUri);
+  const { account, chainId } = useEthers();
+  const currentConfig = getCurrentConfig(chainId?.toString());
+  const wsProvider = new WebSocketProvider(currentConfig.app.wsRpcUri);
   const nounsAuctionHouseContract = NounsAuctionHouseFactory.connect(
-    config.addresses.nounsAuctionHouseProxy,
+    currentConfig.addresses.nounsAuctionHouseProxy,
     wsProvider,
   );
   const [currentAuction, setCurrentAuction] = useState<Auction | undefined>();
   const { data } = useQuery(auctionQuery(currentAuction?.nounId.toNumber() ?? 0), {
     skip: !currentAuction?.nounId.toNumber(),
   });
+
+  console.log({ data });
 
   const fetchPrices = async () => {
     const eth = await fetch(`${EXCHANGE_API}/simple/price?ids=ethereum&vs_currencies=usd`).then(
@@ -193,6 +202,7 @@ const ChainSubscriber: React.FC = () => {
 
     // Fetch the current auction
     const currentAuction = await nounsAuctionHouseContract.auction();
+    console.log({ currentAuction });
     setCurrentAuction(currentAuction);
     // Fetch the previous 24hours of  bids
     const previousBids = await nounsAuctionHouseContract.queryFilter(bidFilter, 0 - BLOCKS_PER_DAY);
@@ -230,6 +240,14 @@ const PastAuctions: React.FC = () => {
   return <></>;
 };
 
+const ApolloWrapper = ({ children }: { children: ReactNode }) => {
+  const { chainId } = useEthers();
+  const currentConfig = getCurrentConfig(chainId?.toString());
+  const client = clientFactory(currentConfig.app.subgraphApiUri);
+
+  return <ApolloProvider client={client}>{children}</ApolloProvider>;
+};
+
 ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
@@ -239,14 +257,16 @@ ReactDOM.render(
             provider => new Web3Provider(provider) // this will vary according to whether you use e.g. ethers or web3.js
           }
         >
-          <ApolloProvider client={client}>
-            <ChainSubscriber />
-            <PastAuctions />
-            <DAppProvider config={useDappConfig}>
-              <App />
-              <Updaters />
-            </DAppProvider>
-          </ApolloProvider>
+          <DAppProvider config={useDappConfig}>
+            <ApolloWrapper>
+              <div>
+                <ChainSubscriber />
+                <PastAuctions />
+                <App />
+                <Updaters />
+              </div>
+            </ApolloWrapper>
+          </DAppProvider>
         </Web3ReactProvider>
       </React.StrictMode>
     </ConnectedRouter>

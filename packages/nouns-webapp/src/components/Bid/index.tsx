@@ -32,7 +32,7 @@ const computeMinimumNextBid = (
 
 const minBidEth = (minBid: BigNumber): string => {
   if (minBid.isZero()) {
-    return '0.01';
+    return '0.1';
   }
 
   const eth = Number(utils.formatEther(EthersBN.from(minBid.toString())));
@@ -154,13 +154,16 @@ const Bid: React.FC<{
     const gasLimit = await contract.estimateGas.createBid(0, auction.nounId, {
       value,
     });
-    const approval: BigNumber = await monaContract.allowance(
-      account,
-      config.addresses.nounsAuctionHouseProxy,
-    );
 
-    if (utils.parseEther(approval.toString()) < utils.parseEther('1000000000'))
-      await approve(config.addresses.nounsAuctionHouseProxy, utils.parseEther('1000000000'));
+    if (!isEthereum) {
+      const approval: BigNumber = await monaContract.allowance(
+        account,
+        config.addresses.nounsAuctionHouseProxy,
+      );
+
+      if (utils.parseEther(approval.toString()) < utils.parseEther('1000000000'))
+        await approve(config.addresses.nounsAuctionHouseProxy, utils.parseEther('1000000000'));
+    }
     placeBid(value, auction.nounId);
   };
 
@@ -214,7 +217,7 @@ const Bid: React.FC<{
           message: placeBidState.errorMessage ? placeBidState.errorMessage : 'Please try again.',
           show: true,
         });
-        setBidButtonContent({ loading: false, content: 'Bid' });
+        setBidButtonContent({ loading: false, content: 'Place bid' });
         break;
       case 'Exception':
         setModal({
@@ -223,7 +226,7 @@ const Bid: React.FC<{
           message: placeBidState.errorMessage ? placeBidState.errorMessage : 'Please try again.',
           show: true,
         });
-        setBidButtonContent({ loading: false, content: 'Bid' });
+        setBidButtonContent({ loading: false, content: 'Place bid' });
         break;
     }
   }, [placeBidState, auctionEnded, setModal]);
@@ -279,7 +282,7 @@ const Bid: React.FC<{
   const isDisabled =
     placeBidState.status === 'Mining' || settleAuctionState.status === 'Mining' || !activeAccount;
 
-  const minBidCopy = `${minBidEth(minBid)} MONA or more`;
+  const minBidCopy = `${minBidEth(minBid)} ${isEthereum ? 'ETH' : 'MONA'} or more`;
   const fomoNounsBtnOnClickHandler = () => {
     // Open Fomo Nouns in a new tab
     window.open('https://fomonouns.wtf', '_blank')?.focus();
