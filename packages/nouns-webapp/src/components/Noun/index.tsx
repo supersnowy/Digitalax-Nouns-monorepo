@@ -101,6 +101,9 @@ const Noun: React.FC<{
       {/* <button onClick={switchNetwork} className={classes.switchNetwork}>
         {buttonText}
       </button> */}
+      <div className={classes.switchNetwork} style={{ textAlign: 'center', width: 'fit-content' }}>
+        Private Auction will be live tomorrow
+      </div>
     </div>
   );
 };
