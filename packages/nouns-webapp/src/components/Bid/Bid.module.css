@@ -23,7 +23,43 @@
   transition: all 0.2s ease-in-out;
 }
 
-.bidBtn:disabled {
+.formCheck label {
+  font-family: Armata;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 15px;
+  line-height: 19px;
+  display: flex;
+  margin: 0 !important;
+  color: rgb(30, 228, 255);
+}
+
+.formCheck input:checked {
+  background-color: rgb(30, 228, 255);
+  border-color: rgb(30, 228, 255);
+}
+
+.polygonFormCheck label {
+  font-family: Armata;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 15px;
+  line-height: 19px;
+  display: flex;
+  margin: 0 !important;
+  color: black;
+}
+
+.polygonFormCheck input:checked {
+  background-color: black;
+  border-color: black;
+}
+
+.polygonFormCheck input:focus {
+  box-shadow: 0 0 0 0.25rem rgb(0 0 0 / 25%);
+}
+
+.formCheck .bidBtn:disabled {
   cursor: not-allowed;
 }
 
