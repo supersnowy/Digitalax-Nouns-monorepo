@@ -11,8 +11,8 @@
   font-family: Armata;
   font-style: normal;
   font-weight: bold;
-  font-size: 4vw;
-  line-height: 5vw;
+  font-size: 3vw;
+  line-height: 4vw;
   display: flex;
   align-items: center;
 
@@ -23,8 +23,8 @@
   font-family: Armata;
   font-style: normal;
   font-weight: normal;
-  font-size: 2vw;
-  line-height: 3vw;
+  font-size: 15px;
+  line-height: 2vw;
 
   color: #ffffff;
 }

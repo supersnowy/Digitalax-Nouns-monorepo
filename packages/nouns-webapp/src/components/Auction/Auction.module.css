@@ -3,7 +3,7 @@
 }
 .nounWrapper {
   width: 100%;
-  align-self: center;
+  align-self: flex-start;
 }
 
 .nounContentCol {
@@ -15,7 +15,7 @@
   /* padding-left: 5rem; */
   padding-bottom: 0rem;
   min-height: 520px;
-  align-self: flex-end !important;
+  align-self: flex-start !important;
 }
 
 .title {

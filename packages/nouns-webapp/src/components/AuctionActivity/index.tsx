@@ -126,7 +126,7 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
 
       <AuctionActivityWrapper>
         <div className={classes.informationRow}>
-          <Row className={classes.activityRow}>
+          <Row className={classes.activityRow} style={{ marginTop: 0, paddingTop: 0 }}>
             <Col lg={12}>
               <AuctionActivityNounTitle
                 isEthereum={isEthereum}
