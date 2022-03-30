@@ -2,12 +2,12 @@ import { ChainId, ContractAddresses } from './types';
 
 const chainIdToAddresses: { [chainId: number]: ContractAddresses } = {
   [ChainId.Mainnet]: {
-    nounsToken: '0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03',
+    nounsToken: '0xEA11d04DEc0B6aec34fF49f1811F86417b0d952C',
     nounsSeeder: '0xCC8a0FB5ab3C7132c1b2A0109142Fb112c4Ce515',
     nounsDescriptor: '0x0Cfdb3Ba1694c2bb2CFACB0339ad7b1Ae5932B63',
     nftDescriptor: '0x0BBAd8c947210ab6284699605ce2a61780958264',
-    nounsAuctionHouse: '0xF15a943787014461d94da08aD4040f79Cd7c124e',
-    nounsAuctionHouseProxy: '0x830BD73E4184ceF73443C15111a1DF14e495C706',
+    nounsAuctionHouse: '0x753F8E6897A438eC6109D847C903B99181E52681',
+    nounsAuctionHouseProxy: '0x753F8E6897A438eC6109D847C903B99181E52681',
     nounsAuctionHouseProxyAdmin: '0xC1C119932d78aB9080862C5fcb964029f086401e',
     nounsDaoExecutor: '0x0BC3807Ec262cB779b38D65b38158acC3bfedE10',
     nounsDAOProxy: '0x6f3E6272A167e8AcCb32072d08E0957F9c79223d',
@@ -50,12 +50,12 @@ const chainIdToAddresses: { [chainId: number]: ContractAddresses } = {
     nounsDAOLogicV1: '0x3F4F7BD9A8Ddc700e1622A1B40D7ADEabf62f423',
   },
   [ChainId.Polygon]: {
-    nounsToken: '0x9C41EaA62D0bd49fC43F7057E0a9077F6CbF07e9',
+    nounsToken: '0x1bd5AFBFE8e567a576c10d1EbCE5e1eBC0638da8',
     nounsSeeder: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
     nounsDescriptor: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
     nftDescriptor: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
-    nounsAuctionHouse: '0x18abeb7c29808d75b7E923BcEEA9fFBcEaD3ff20',
-    nounsAuctionHouseProxy: '0x18abeb7c29808d75b7E923BcEEA9fFBcEaD3ff20',
+    nounsAuctionHouse: '0x50b8c9BE993736Cd76342c09F4431f9E70fC6b99',
+    nounsAuctionHouseProxy: '0x50b8c9BE993736Cd76342c09F4431f9E70fC6b99',
     nounsAuctionHouseProxyAdmin: '0x0165878A594ca255338adfa4d48449f69242Eb8F',
     nounsDaoExecutor: '0x869298e4FEbC446F5eCbBAceE02C4DD63F661aB7',
     nounsDAOProxy: '0x4618033a675711827306b7baCe4E95963e94F240',
