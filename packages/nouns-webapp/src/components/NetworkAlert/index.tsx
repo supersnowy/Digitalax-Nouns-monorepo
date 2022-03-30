@@ -36,7 +36,8 @@ const NetworkAlert = () => {
         </Modal.Header>
         <Modal.Body>
           <p>
-            Nouns DAO auctions require you to switch over {networkName()} to be able to participate.
+            CC0 DAO auctions require you to switch over Ethereum or Polygon to be able to
+            participate.
           </p>
           <p>
             <b>To get started, please switch your network by following the instructions below:</b>
@@ -44,7 +45,7 @@ const NetworkAlert = () => {
           <ol>
             <li>Open Metamask</li>
             <li>Click the network select dropdown</li>
-            <li>Click on "{metamaskNetworkName()}"</li>
+            <li>Click on "Ethereum Mainnet" or "Polygon Mainnet"</li>
           </ol>
         </Modal.Body>
       </Modal>

@@ -129,8 +129,6 @@ const ChainSubscriber: React.FC = () => {
     skip: !currentAuction?.nounId.toNumber(),
   });
 
-  console.log({ data });
-
   const fetchPrices = async () => {
     const eth = await fetch(`${EXCHANGE_API}/simple/price?ids=ethereum&vs_currencies=usd`).then(
       res => res.json(),
