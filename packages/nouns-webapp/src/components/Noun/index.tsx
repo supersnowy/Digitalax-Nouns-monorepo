@@ -98,9 +98,9 @@ const Noun: React.FC<{
           </video>
         )}
       </div>
-      <button onClick={switchNetwork} className={classes.switchNetwork}>
+      {/* <button onClick={switchNetwork} className={classes.switchNetwork}>
         {buttonText}
-      </button>
+      </button> */}
     </div>
   );
 };
