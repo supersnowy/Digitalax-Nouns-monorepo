@@ -21,7 +21,7 @@ const Documentation = () => {
   );
   return (
     <Section fullWidth={false} className={classes.wrapper}>
-      <Container fluid={'xxl'}>
+      <Container style={{ maxWidth: 1000 }}>
         <div className={classes.headerWrapper}>
           <h1>What is CC0 DAO?</h1>
           <p className={classes.aboutText}>
@@ -61,8 +61,8 @@ const Documentation = () => {
         <div className={classes.headerWrapper}>
           <h1>What is the difference between the public and DAO only auction? </h1>
           <p className={classes.aboutText}>
-            If an auction reserve is not met for the public auction on Ethereum, this NFT is put up for
-            auction on Polygon Network in a DAO only bid setting. This means that you must be a
+            If an auction reserve is not met for the public auction on Ethereum, this NFT is put up
+            for auction on Polygon Network in a DAO only bid setting. This means that you must be a
             member of the DAO to bid and hold $CC0 token to bid with. $CC0 token is distributed to
             members of the DAO.
             <br />
