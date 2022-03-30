@@ -89,6 +89,16 @@ const Documentation = () => {
         </div>
 
         <div className={classes.headerWrapper}>
+          <h1>How do I submit art to be bid on? </h1>
+          <p className={classes.aboutText}>
+          The cc0 NFTs placed on auction are curated by the DAO and represent far more than 
+          just their content display. To have your art included, onboard as part of the Web3 
+          Creative Residency. Join our <a href="https://discord.gg/RWj3xrsMjb" target= "_blank" rel="noreferrer">discord server</a> and reach out so we can guide you 
+          towards the next actions!
+          </p>
+        </div>
+
+        <div className={classes.headerWrapper}>
           <h1>What is $CCO? </h1>
           <p className={classes.aboutText}>
             This is the native token for the DAO and is distributed to members through staking,
