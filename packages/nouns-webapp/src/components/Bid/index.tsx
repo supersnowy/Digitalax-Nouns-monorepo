@@ -97,14 +97,12 @@ const Bid: React.FC<{
     AuctionHouseContractFunction.settleCurrentAndCreateNewAuction,
   );
 
-  const { ethereum } = window;
-  const web3Provider = new ethers.providers.Web3Provider(ethereum);
+  const web3Provider = new ethers.providers.JsonRpcProvider(currentConfig.app.jsonRpcUri);
   const monaContract = new ethers.Contract(
     currentConfig.addresses.lidoToken ?? '',
     ERC20ABI,
     web3Provider,
   );
-
   const { send: approve, state: approveState } = useContractFunction(monaContract, 'approve');
 
   const bidInputHandler = (event: ChangeEvent<HTMLInputElement>) => {
