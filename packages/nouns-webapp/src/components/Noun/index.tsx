@@ -1,10 +1,13 @@
 import classes from './Noun.module.css';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 // import Skeleton from 'ract-loading-skeleton';
 import loadingNoun from '../../assets/loading-skull-noun.gif';
 import Image from 'react-bootstrap/Image';
 import { useEthers } from '@usedapp/core';
 import { CHAIN_ID, isMainnet, MAINNET_CHAIN_ID } from '../../config';
+import { AlertModal, setAlertModal } from '../../state/slices/application';
+import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '../../hooks';
 
 export const LoadingNoun = () => {
   return (
@@ -60,22 +63,32 @@ const Noun: React.FC<{
 }> = props => {
   const { imgPath, type, alt, className, wrapperClassName, isEthereum = false } = props;
   const { chainId } = useEthers();
+  const dispatch = useAppDispatch();
+  const [zoom, setZoom] = useState(false);
+  const setModal = useCallback((modal: AlertModal) => dispatch(setAlertModal(modal)), [dispatch]);
   const buttonText =
     chainId === CHAIN_ID
       ? 'Switch to Public Ethereum Auction'
       : 'Switch to DAO Only Polygon Auction';
 
   const switchNetwork = () => {
-    if (isMainnet(chainId?.toString())) {
-      requestSwitchNetwork(CHAIN_ID);
-    } else {
-      requestSwitchNetwork(MAINNET_CHAIN_ID);
-    }
+    setModal({
+      show: true,
+      isEthereum,
+      title: 'Patient',
+      message: 'Private auction will be live tomorrow',
+    });
+
+    // if (isMainnet(chainId?.toString())) {
+    //   requestSwitchNetwork(CHAIN_ID);
+    // } else {
+    //   requestSwitchNetwork(MAINNET_CHAIN_ID);
+    // }
   };
 
   return (
     <div>
-      <div className={`${classes.imgWrapper} ${wrapperClassName}`}>
+      <div className={`${!zoom ? classes.imgWrapper : classes.imgZoomWrapper} ${wrapperClassName}`}>
         {type === 'image' ? (
           <Image
             className={`${classes.img} ${
@@ -97,13 +110,13 @@ const Noun: React.FC<{
             <source src={imgPath} />
           </video>
         )}
+        <button className={classes.zoomBtn} onClick={() => setZoom(!zoom)}>
+          <img src="/zoom_btn.png" />
+        </button>
       </div>
-      {/* <button onClick={switchNetwork} className={classes.switchNetwork}>
+      <button onClick={switchNetwork} className={classes.switchNetwork}>
         {buttonText}
-      </button> */}
-      <div className={classes.switchNetwork} style={{ textAlign: 'center', width: 'fit-content' }}>
-        Private Auction will be live tomorrow
-      </div>
+      </button>
     </div>
   );
 };

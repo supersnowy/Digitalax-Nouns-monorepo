@@ -25,11 +25,9 @@ const AuctionTimer: React.FC<{
 
   const timerDuration = dayjs.duration(auctionTimerRef.current, 's');
   const endTime = dayjs().add(auctionTimerRef.current, 's').local();
-
   // timer logic
   useEffect(() => {
     const timeLeft = (auction && Number(auction.endTime)) - dayjs().unix();
-
     setAuctionTimer(auction && timeLeft);
 
     if (auction && timeLeft <= 0) {
@@ -50,7 +48,6 @@ const AuctionTimer: React.FC<{
 
   const flooredMinutes = Math.floor(timerDuration.minutes());
   const flooredSeconds = Math.floor(timerDuration.seconds());
-
   if (!auction) return null;
 
   return (
@@ -68,7 +65,7 @@ const AuctionTimer: React.FC<{
             ? window.innerWidth < 992
               ? auctionContentShort
               : auctionContentLong
-            : `Ends on ${endTime.format('MMM Do')} at`}
+            : `Ends on ${endTime.format('MMM D')} at`}
         </h4>
       </div>
       <div>
@@ -81,7 +78,7 @@ const AuctionTimer: React.FC<{
           >
             <div className={classes.timerSection}>
               <span>
-                {`${Math.floor(timerDuration.hours())}`}
+                {`${Math.floor(timerDuration.asHours())}`}
                 <span className={classes.small}>h</span>
               </span>
             </div>
