@@ -30,8 +30,10 @@ const computeMinimumNextBid = (
     : currentBid.times(minBidIncPercentage.div(100).plus(1));
 };
 
-const minBidEth = (minBid: BigNumber): string => {
+const minBidEth = (minBid: BigNumber, paymentOption: string): string => {
   if (minBid.isZero()) {
+    if (paymentOption === 'ETH') return '0.1';
+    else if (paymentOption === 'MONA') return '0.9';
     return '0.1';
   }
 
@@ -120,17 +122,21 @@ const Bid: React.FC<{
     if (!auction || !bidInputRef.current || !bidInputRef.current.value) {
       return;
     }
-
-    if (currentBid(bidInputRef).isLessThan(minBid)) {
+    if (
+      currentBid(bidInputRef).isLessThan(
+        new BigNumber(utils.parseEther(minBidEth(minBid, paymentOption)).toString()),
+      )
+    ) {
       setModal({
         show: true,
         isEthereum,
         title: 'Insufficient bid amount 🤏',
         message: `Please place a bid higher than or equal to the minimum bid amount of ${minBidEth(
           minBid,
+          paymentOption,
         )} ETH.`,
       });
-      setBidInput(minBidEth(minBid));
+      setBidInput(minBidEth(minBid, paymentOption));
       return;
     }
 
@@ -293,7 +299,9 @@ const Bid: React.FC<{
   const isDisabled =
     placeBidState.status === 'Mining' || settleAuctionState.status === 'Mining' || !activeAccount;
 
-  const minBidCopy = `${minBidEth(minBid)} ${isEthereum ? paymentOption : 'MONA'} or more`;
+  const minBidCopy = `${minBidEth(minBid, paymentOption)} ${
+    isEthereum ? paymentOption : 'MONA'
+  } or more`;
   const fomoNounsBtnOnClickHandler = () => {
     // Open Fomo Nouns in a new tab
     window.open('https://fomonouns.wtf', '_blank')?.focus();
