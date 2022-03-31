@@ -110,18 +110,18 @@ const Noun: React.FC<{
       : 'Switch to DAO Only Polygon Auction';
 
   const switchNetwork = () => {
-    setModal({
-      show: true,
-      isEthereum,
-      title: 'Soooonnnnnn',
-      message: 'Private auction will be live tomorrow',
-    });
+    // setModal({
+    //   show: true,
+    //   isEthereum,
+    //   title: 'Soooonnnnnn',
+    //   message: 'Private auction will be live tomorrow',
+    // });
 
-    // if (isMainnet(chainId?.toString())) {
-    //   requestSwitchNetwork(CHAIN_ID);
-    // } else {
-    //   requestSwitchNetwork(MAINNET_CHAIN_ID);
-    // }
+    if (isMainnet(chainId?.toString())) {
+      requestSwitchNetwork(CHAIN_ID);
+    } else {
+      requestSwitchNetwork(MAINNET_CHAIN_ID);
+    }
   };
 
   return (
