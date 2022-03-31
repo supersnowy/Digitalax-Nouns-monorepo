@@ -50,16 +50,18 @@ const currentBid = (bidInputRef: React.RefObject<HTMLInputElement>) => {
   return new BigNumber(utils.parseEther(bidInputRef.current.value).toString());
 };
 
+const cc0TokenAddress = '0x91dbd2951310e887940c29d9828556086a52c54a';
+
 const Bid: React.FC<{
   auction: Auction;
   isEthereum?: boolean;
   auctionEnded: boolean;
 }> = props => {
   const activeAccount = useAppSelector(state => state.account.activeAccount);
-  const { library } = useEthers();
+  const { library, chainId } = useEthers();
   const [paymentOption, setPaymentOption] = useState<string>('ETH');
   let { auction, auctionEnded, isEthereum } = props;
-  const currentConfig = getCurrentConfig();
+  const currentConfig = getCurrentConfig(chainId?.toString());
 
   const nounsAuctionHouseContract = new NounsAuctionHouseFactory().attach(
     currentConfig.addresses.nounsAuctionHouseProxy,
@@ -105,7 +107,9 @@ const Bid: React.FC<{
     ERC20ABI,
     web3Provider,
   );
+  const cc0Contract = new ethers.Contract(cc0TokenAddress, ERC20ABI, web3Provider);
   const { send: approve, state: approveState } = useContractFunction(monaContract, 'approve');
+  const { send: approveCC0 } = useContractFunction(cc0Contract, 'approve');
 
   const bidInputHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const input = event.target.value;
@@ -156,10 +160,6 @@ const Bid: React.FC<{
     }
 
     const value = utils.parseEther(bidInputRef.current.value.toString());
-    const contract = connectContractToSigner(nounsAuctionHouseContract, undefined, library);
-    const gasLimit = await contract.estimateGas.createBid(0, auction.nounId, {
-      value,
-    });
 
     if (isEthereum) {
       if (paymentOption === 'MONA') {
@@ -180,6 +180,16 @@ const Bid: React.FC<{
         });
       }
     } else {
+      const approval = await cc0Contract.allowance(
+        account,
+        currentConfig.addresses.nounsAuctionHouseProxy,
+      );
+      if (utils.parseEther(approval.toString()) < utils.parseEther('1000000000'))
+        await approveCC0(
+          currentConfig.addresses.nounsAuctionHouseProxy,
+          utils.parseEther('1000000000'),
+        );
+
       placeBid(value, auction.nounId);
     }
   };
@@ -300,7 +310,7 @@ const Bid: React.FC<{
     placeBidState.status === 'Mining' || settleAuctionState.status === 'Mining' || !activeAccount;
 
   const minBidCopy = `${minBidEth(minBid, paymentOption)} ${
-    isEthereum ? paymentOption : 'MONA'
+    isEthereum ? paymentOption : 'CC0'
   } or more`;
   const fomoNounsBtnOnClickHandler = () => {
     // Open Fomo Nouns in a new tab
@@ -314,33 +324,35 @@ const Bid: React.FC<{
       {showConnectModal && activeAccount === undefined && (
         <WalletConnectModal onDismiss={hideModalHandler} />
       )}
-      <div className="mb-3">
-        <Form.Check
-          className={isEthereum ? classes.formCheck : classes.polygonFormCheck}
-          inline
-          label="Eth"
-          defaultChecked={paymentOption === 'ETH'}
-          name="group1"
-          type="radio"
-          onChange={e => {
-            setPaymentOption('ETH');
-          }}
-          id={`inline-radio-1`}
-        />
-        <Form.Check
-          className={isEthereum ? classes.formCheck : classes.polygonFormCheck}
-          inline
-          label="Mona"
-          defaultChecked={paymentOption === 'MONA'}
-          name="group1"
-          value={paymentOption}
-          type="radio"
-          onChange={() => {
-            setPaymentOption('MONA');
-          }}
-          id={`inline-radio-2`}
-        />
-      </div>
+      {isEthereum && (
+        <div className="mb-3">
+          <Form.Check
+            className={isEthereum ? classes.formCheck : classes.polygonFormCheck}
+            inline
+            label="Eth"
+            defaultChecked={paymentOption === 'ETH'}
+            name="group1"
+            type="radio"
+            onChange={e => {
+              setPaymentOption('ETH');
+            }}
+            id={`inline-radio-1`}
+          />
+          <Form.Check
+            className={isEthereum ? classes.formCheck : classes.polygonFormCheck}
+            inline
+            label="Mona"
+            defaultChecked={paymentOption === 'MONA'}
+            name="group1"
+            value={paymentOption}
+            type="radio"
+            onChange={() => {
+              setPaymentOption('MONA');
+            }}
+            id={`inline-radio-2`}
+          />
+        </div>
+      )}
       <InputGroup>
         {!auctionEnded && (
           <>
