@@ -98,6 +98,11 @@
   vertical-align: top;
 }
 
+.polygonLoader svg path,
+svg rect {
+  fill: black !important;
+}
+
 .loader svg path,
 svg rect {
   fill: rgb(30, 228, 255);

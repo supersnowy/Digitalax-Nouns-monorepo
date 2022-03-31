@@ -10,9 +10,13 @@ import { useDispatch } from 'react-redux';
 import { useAppDispatch } from '../../hooks';
 
 export const LoadingNoun = () => {
+  const { chainId } = useEthers();
   return (
     <div className={classes.imgWrapper}>
-      <div className={classes.loader} title="0">
+      <div
+        className={`${classes.loader} ${chainId?.toString() === '137' && classes.polygonLoader}`}
+        title="0"
+      >
         <svg
           version="1.1"
           id="loader-1"

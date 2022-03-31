@@ -24,11 +24,18 @@
   font-weight: normal;
   font-size: 4.5vw;
   line-height: 5vw;
+  margin-bottom: 4vw;
   display: flex;
   align-items: center;
   margin-bottom: 100px;
 
   color: #1ee4ff;
+}
+
+@media (max-width: 576px) {
+  .title {
+    margin-bottom: 1rem !important;
+  }
 }
 
 @media (max-width: 992px) {
