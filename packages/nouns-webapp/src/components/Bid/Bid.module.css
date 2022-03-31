@@ -127,6 +127,13 @@
   pointer-events: none;
 }
 
+@media (max-width: 768px) {
+  .customPlaceholderBidAmt {
+    font-size: 20px;
+    top: 22% !important;
+  }
+}
+
 .activityRow .form-floating {
   display: flex !important;
   flex-flow: row nowrap !important;

@@ -37,7 +37,9 @@
   }
 
   .description {
-    text-align: center!important;
+    text-align: center !important;
+    font-size: 15px !important;
+    line-height: 18px !important;
   }
 }
 
