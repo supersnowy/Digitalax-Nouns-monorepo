@@ -34,7 +34,7 @@ const minBidEth = (minBid: BigNumber, paymentOption: string): string => {
   if (minBid.isZero()) {
     if (paymentOption === 'ETH') return '0.1';
     else if (paymentOption === 'MONA') return '0.9';
-    else if (paymentOption === 'CC0') return '100';
+    else if (paymentOption === 'CC0') return '10';
   }
 
   const eth = Number(utils.formatEther(EthersBN.from(minBid.toString())));
