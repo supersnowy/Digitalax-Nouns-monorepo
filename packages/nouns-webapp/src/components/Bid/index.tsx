@@ -34,7 +34,7 @@ const minBidEth = (minBid: BigNumber, paymentOption: string): string => {
   if (minBid.isZero()) {
     if (paymentOption === 'ETH') return '0.1';
     else if (paymentOption === 'MONA') return '0.9';
-    return '0.1';
+    else if (paymentOption === 'CC0') return '100';
   }
 
   const eth = Number(utils.formatEther(EthersBN.from(minBid.toString())));
@@ -59,8 +59,8 @@ const Bid: React.FC<{
 }> = props => {
   const activeAccount = useAppSelector(state => state.account.activeAccount);
   const { library, chainId } = useEthers();
-  const [paymentOption, setPaymentOption] = useState<string>('ETH');
   let { auction, auctionEnded, isEthereum } = props;
+  const [paymentOption, setPaymentOption] = useState<string>(isEthereum ? 'ETH' : 'CC0');
   const currentConfig = getCurrentConfig(chainId?.toString());
 
   const nounsAuctionHouseContract = new NounsAuctionHouseFactory().attach(
