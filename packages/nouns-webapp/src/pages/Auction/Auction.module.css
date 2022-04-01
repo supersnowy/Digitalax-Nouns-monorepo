@@ -1,0 +1,33 @@
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 100px;
+  width: 20%;
+  text-align: center;
+  padding: 1em;
+  margin: 0 auto 1em;
+  vertical-align: top;
+}
+
+.polygonWrapper .loader svg path,
+svg rect {
+  fill: black !important;
+}
+
+.loader svg path,
+svg rect {
+  fill: rgb(30, 228, 255);
+}
+
+.loadingWrapper {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  background: black;
+}
+
+.polygonWrapper {
+  background: #1ee4ff;
+}

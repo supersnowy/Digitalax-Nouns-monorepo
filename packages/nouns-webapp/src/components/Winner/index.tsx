@@ -26,7 +26,13 @@ const Winner: React.FC<WinnerProps> = props => {
   const nonNounderNounContent = isWinnerYou ? (
     <>You</>
   ) : (
-    <ShortAddress size={40} isEthereum={isEthereum} address={winner} avatar={true} />
+    <>
+      {winner ? (
+        <ShortAddress size={40} isEthereum={isEthereum} address={winner} avatar={true} />
+      ) : (
+        'Moved to Polygon Private Auction'
+      )}
+    </>
   );
 
   const nounderNounContent = <h2>nounders.eth</h2>;

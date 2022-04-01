@@ -7,7 +7,7 @@ import { ChainId, DAppProvider, useEthers } from '@usedapp/core';
 import { Web3ReactProvider } from '@web3-react/core';
 import { Web3Provider } from '@ethersproject/providers';
 import account from './state/slices/account';
-import application, { setPrices } from './state/slices/application';
+import application, { setIsSwitching, setPrices } from './state/slices/application';
 import logs from './state/slices/logs';
 import auction, {
   reduxSafeAuction,
@@ -160,7 +160,12 @@ const ChainSubscriber: React.FC = () => {
     fetchPrices();
   }, []);
 
+  useEffect(() => {
+    loadState();
+  }, [chainId]);
+
   const loadState = async () => {
+    dispatch(setIsSwitching(true));
     const bidFilter = nounsAuctionHouseContract.filters.AuctionBidERC20(null, null, null, null);
     const extendedFilter = nounsAuctionHouseContract.filters.AuctionExtended(null, null);
     const createdFilter = nounsAuctionHouseContract.filters.AuctionCreated(null, null, null, null);
@@ -200,7 +205,6 @@ const ChainSubscriber: React.FC = () => {
 
     // Fetch the current auction
     const currentAuction = await nounsAuctionHouseContract.auction();
-    console.log({ currentAuction });
     setCurrentAuction(currentAuction);
     // Fetch the previous 24hours of  bids
     const previousBids = await nounsAuctionHouseContract.queryFilter(bidFilter, 0 - BLOCKS_PER_DAY);
@@ -221,6 +225,7 @@ const ChainSubscriber: React.FC = () => {
     nounsAuctionHouseContract.on(settledFilter, (nounId, winner, amount) =>
       processAuctionSettled(nounId, winner, amount),
     );
+    dispatch(setIsSwitching(false));
   };
 
   return <></>;
