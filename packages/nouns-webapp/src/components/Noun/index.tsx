@@ -7,7 +7,9 @@ import { useEthers } from '@usedapp/core';
 import { CHAIN_ID, isMainnet, MAINNET_CHAIN_ID } from '../../config';
 import { AlertModal, setAlertModal } from '../../state/slices/application';
 import { useDispatch } from 'react-redux';
-import { useAppDispatch } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import WalletConnectModal from '../WalletConnectModal';
+import { setShowConnectModal } from '../../state/slices/account';
 
 export const LoadingNoun = () => {
   const { chainId } = useEthers();
@@ -105,6 +107,7 @@ const Noun: React.FC<{
 }> = props => {
   const { imgPath, type, alt, className, wrapperClassName, isEthereum = false } = props;
   const { chainId } = useEthers();
+  const activeAccount = useAppSelector(state => state.account.activeAccount);
   const dispatch = useAppDispatch();
   const [zoom, setZoom] = useState(false);
   const setModal = useCallback((modal: AlertModal) => dispatch(setAlertModal(modal)), [dispatch]);
@@ -120,6 +123,11 @@ const Noun: React.FC<{
     //   title: 'Soooonnnnnn',
     //   message: 'Private auction will be live tomorrow',
     // });
+
+    if (!activeAccount) {
+      dispatch(setShowConnectModal(true));
+      return;
+    }
 
     if (isMainnet(chainId?.toString())) {
       requestSwitchNetwork(CHAIN_ID);

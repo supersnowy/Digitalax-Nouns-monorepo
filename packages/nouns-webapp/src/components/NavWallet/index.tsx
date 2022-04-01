@@ -9,13 +9,14 @@ import { faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { faSortUp } from '@fortawesome/free-solid-svg-icons';
 import { Dropdown } from 'react-bootstrap';
 import WalletConnectModal from '../WalletConnectModal';
-import { useAppSelector } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 import { useShortAddress } from '../ShortAddress';
 import { isMobileScreen } from '../../utils/isMobile';
 import { usePickByState } from '../../utils/colorResponsiveUIUtils';
 import WalletConnectButton from './WalletConnectButton';
+import { setShowConnectModal } from '../../state/slices/account';
 
 interface NavWalletProps {
   address: string;
@@ -38,30 +39,31 @@ type CustomMenuProps = {
 
 const NavWallet: React.FC<NavWalletProps> = props => {
   const { address, buttonStyle } = props;
-
+  const dispatch = useAppDispatch();
   const [buttonUp, setButtonUp] = useState(false);
-  const [showConnectModal, setShowConnectModal] = useState(false);
+  // const [showConnectModal, setShowConnectModal] = useState(false);
   const history = useHistory();
   const { library: provider } = useEthers();
   const activeAccount = useAppSelector(state => state.account.activeAccount);
+  const showConnectModal = useAppSelector(state => state.account.showConnectModal);
   const { deactivate } = useEthers();
   const ens = useReverseENSLookUp(address);
   const shortAddress = useShortAddress(address);
 
   const setModalStateHandler = (state: boolean) => {
-    setShowConnectModal(state);
+    dispatch(setShowConnectModal(state));
   };
 
   const switchWalletHandler = () => {
-    setShowConnectModal(false);
+    dispatch(setShowConnectModal(false));
     setButtonUp(false);
     deactivate();
-    setShowConnectModal(false);
-    setShowConnectModal(true);
+    dispatch(setShowConnectModal(false));
+    dispatch(setShowConnectModal(true));
   };
 
   const disconectWalletHandler = () => {
-    setShowConnectModal(false);
+    dispatch(setShowConnectModal(false));
     setButtonUp(false);
     deactivate();
   };
@@ -136,7 +138,6 @@ const NavWallet: React.FC<NavWalletProps> = props => {
         aria-labelledby={props.labeledBy}
       >
         <div>
-
           <div
             onClick={disconectWalletHandler}
             className={clsx(
