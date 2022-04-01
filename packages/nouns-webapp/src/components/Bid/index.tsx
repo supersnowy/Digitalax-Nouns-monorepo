@@ -74,7 +74,7 @@ const Bid: React.FC<{
   const [bidInput, setBidInput] = useState('');
   const [bidButtonContent, setBidButtonContent] = useState({
     loading: false,
-    content: auctionEnded ? 'Settle' : auction.bidder !== activeAccount ? 'Place bid' : 'Withdraw',
+    content: auctionEnded ? 'Settle' : 'Approve',
   });
 
   const [showConnectModal, setShowConnectModal] = useState(false);
@@ -101,6 +101,9 @@ const Bid: React.FC<{
     AuctionHouseContractFunction.settleCurrentAndCreateNewAuction,
   );
 
+  const [monaApproved, setMonaApproved] = useState(false);
+  const [cc0Approved, setCC0Approved] = useState(false);
+
   const web3Provider = new ethers.providers.JsonRpcProvider(currentConfig.app.jsonRpcUri);
   const monaContract = new ethers.Contract(
     currentConfig.addresses.lidoToken ?? '',
@@ -121,6 +124,42 @@ const Bid: React.FC<{
 
     setBidInput(event.target.value);
   };
+
+  const fetchAllowance = async () => {
+    if (isEthereum) {
+      if (paymentOption === 'MONA') {
+        const approval: BigNumber = await monaContract.allowance(
+          account,
+          currentConfig.addresses.nounsAuctionHouseProxy,
+        );
+
+        if (utils.parseEther(approval.toString()) >= utils.parseEther('1000000000')) {
+          setMonaApproved(true);
+          setBidButtonContent({
+            loading: false,
+            content: 'Place bid',
+          });
+        }
+      }
+    } else {
+      const approval = await cc0Contract.allowance(
+        account,
+        currentConfig.addresses.nounsAuctionHouseProxy,
+      );
+      if (utils.parseEther(approval.toString()) >= utils.parseEther('1000000000')) {
+        console.log('this is inside approval true');
+        setCC0Approved(true);
+        setBidButtonContent({
+          loading: false,
+          content: 'Place bid',
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchAllowance();
+  }, []);
 
   const confirmBid = async () => {
     if (!auction || !bidInputRef.current || !bidInputRef.current.value) {
@@ -144,6 +183,32 @@ const Bid: React.FC<{
       return;
     }
 
+    if (isEthereum) {
+      if (paymentOption === 'MONA') {
+        if (!monaApproved) {
+          setBidButtonContent({ loading: true, content: '' });
+          await approve(
+            currentConfig.addresses.nounsAuctionHouseProxy,
+            utils.parseEther('10000000000'),
+          );
+          setMonaApproved(true);
+          setBidButtonContent({ loading: false, content: 'Place bid' });
+          return;
+        }
+      }
+    } else {
+      if (!cc0Approved) {
+        setBidButtonContent({ loading: true, content: '' });
+        await approveCC0(
+          currentConfig.addresses.nounsAuctionHouseProxy,
+          utils.parseEther('10000000000'),
+        );
+        setCC0Approved(true);
+        setBidButtonContent({ loading: false, content: 'Place bid' });
+        return;
+      }
+    }
+
     setModal({
       show: true,
       isEthereum,
@@ -163,16 +228,6 @@ const Bid: React.FC<{
 
     if (isEthereum) {
       if (paymentOption === 'MONA') {
-        const approval: BigNumber = await monaContract.allowance(
-          account,
-          currentConfig.addresses.nounsAuctionHouseProxy,
-        );
-
-        if (utils.parseEther(approval.toString()) < utils.parseEther('1000000000'))
-          await approve(
-            currentConfig.addresses.nounsAuctionHouseProxy,
-            utils.parseEther('1000000000'),
-          );
         placeBid(value, auction.nounId);
       } else {
         placeBid(0, auction.nounId, {
@@ -180,16 +235,6 @@ const Bid: React.FC<{
         });
       }
     } else {
-      const approval = await cc0Contract.allowance(
-        account,
-        currentConfig.addresses.nounsAuctionHouseProxy,
-      );
-      if (utils.parseEther(approval.toString()) < utils.parseEther('1000000000'))
-        await approveCC0(
-          currentConfig.addresses.nounsAuctionHouseProxy,
-          utils.parseEther('1000000000'),
-        );
-
       placeBid(value, auction.nounId);
     }
   };
@@ -229,10 +274,6 @@ const Bid: React.FC<{
   useEffect(() => {
     switch (!auctionEnded && placeBidState.status) {
       case 'None':
-        setBidButtonContent({
-          loading: false,
-          content: 'Place bid',
-        });
         break;
       case 'Mining':
         setBidButtonContent({ loading: true, content: '' });

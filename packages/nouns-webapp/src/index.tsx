@@ -166,7 +166,13 @@ const ChainSubscriber: React.FC = () => {
 
   const loadState = async () => {
     dispatch(setIsSwitching(true));
-    const bidFilter = nounsAuctionHouseContract.filters.AuctionBidERC20(null, null, null, null);
+    const bidFilter = nounsAuctionHouseContract.filters.AuctionBid(null, null, null, null);
+    const bidERC20Filter = nounsAuctionHouseContract.filters.AuctionBidERC20(
+      null,
+      null,
+      null,
+      null,
+    );
     const extendedFilter = nounsAuctionHouseContract.filters.AuctionExtended(null, null);
     const createdFilter = nounsAuctionHouseContract.filters.AuctionCreated(null, null, null, null);
     const settledFilter = nounsAuctionHouseContract.filters.AuctionSettled(null, null, null);
@@ -214,6 +220,9 @@ const ChainSubscriber: React.FC = () => {
     }
 
     nounsAuctionHouseContract.on(bidFilter, (nounId, sender, value, extended, event) =>
+      processBidFilter(nounId, sender, value, extended, event),
+    );
+    nounsAuctionHouseContract.on(bidERC20Filter, (nounId, sender, value, extended, event) =>
       processBidFilter(nounId, sender, value, extended, event),
     );
     nounsAuctionHouseContract.on(createdFilter, (nounId, startTime, endTime) =>

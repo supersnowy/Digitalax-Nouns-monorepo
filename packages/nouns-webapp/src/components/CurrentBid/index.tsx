@@ -38,7 +38,11 @@ const CurrentBid: React.FC<{
       </div>
       <div>
         <h2 className={classes.currentBid} style={{ color: isEthereum ? primary : black }}>
-          {currentBid === BID_N_A ? BID_N_A : <TruncatedAmount amount={currentBid && currentBid} />}
+          {currentBid === BID_N_A ? (
+            BID_N_A
+          ) : (
+            <TruncatedAmount isEthereum={isEthereum} amount={currentBid && currentBid} />
+          )}
         </h2>
       </div>
     </div>
