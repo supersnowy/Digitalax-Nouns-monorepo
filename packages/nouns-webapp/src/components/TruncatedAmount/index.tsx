@@ -4,8 +4,8 @@ import React from 'react';
 import { useAppSelector } from '../../hooks';
 import { isMobileScreen } from '../../utils/isMobile';
 
-const TruncatedAmount: React.FC<{ amount: BigNumber }> = props => {
-  const { amount } = props;
+const TruncatedAmount: React.FC<{ amount: BigNumber; isEthereum?: boolean }> = props => {
+  const { amount, isEthereum } = props;
   const { mona, eth } = useAppSelector(state => state.application);
   const isMobile = isMobileScreen();
 
@@ -16,10 +16,18 @@ const TruncatedAmount: React.FC<{ amount: BigNumber }> = props => {
   return (
     <>
       {isMobile ? (
-        <>{`${monaValue}`} MONA</>
+        <>
+          {`${monaValue}`} {isEthereum ? 'MONA' : 'CC0'}
+        </>
       ) : (
         <>
-          {`${ethValue}`} ETH ({`${monaValue}`} MONA)
+          {isEthereum ? (
+            <>
+              {`${ethValue}`} ETH ({`${monaValue}`} MONA)
+            </>
+          ) : (
+            <>{monaValue} CCO</>
+          )}
         </>
       )}
     </>
