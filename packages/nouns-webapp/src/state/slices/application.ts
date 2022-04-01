@@ -12,6 +12,7 @@ export interface AlertModal {
 interface ApplicationState {
   stateBackgroundColor: string;
   isCoolBackground: boolean;
+  isSwitching: boolean;
   alertModal: AlertModal;
   eth: number;
   mona: number;
@@ -20,6 +21,7 @@ interface ApplicationState {
 const initialState: ApplicationState = {
   stateBackgroundColor: grey,
   isCoolBackground: true,
+  isSwitching: false,
   alertModal: {
     show: false,
   },
@@ -42,9 +44,13 @@ export const applicationSlice = createSlice({
     setAlertModal: (state, action: PayloadAction<AlertModal>) => {
       state.alertModal = action.payload;
     },
+    setIsSwitching: (state, action: PayloadAction<boolean>) => {
+      state.isSwitching = action.payload;
+    },
   },
 });
 
-export const { setStateBackgroundColor, setAlertModal, setPrices } = applicationSlice.actions;
+export const { setStateBackgroundColor, setAlertModal, setPrices, setIsSwitching } =
+  applicationSlice.actions;
 
 export default applicationSlice.reducer;
