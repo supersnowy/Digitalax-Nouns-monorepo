@@ -1,6 +1,6 @@
 import Davatar from '@davatar/react';
 import { useEthers } from '@usedapp/core';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useReverseENSLookUp } from '../../utils/ensLookup';
 import { getNavBarButtonVariant, NavBarButtonStyle } from '../NavBarButton';
 import classes from './NavWallet.module.css';
@@ -43,6 +43,7 @@ const NavWallet: React.FC<NavWalletProps> = props => {
   const [buttonUp, setButtonUp] = useState(false);
   // const [showConnectModal, setShowConnectModal] = useState(false);
   const history = useHistory();
+  const [isMobile, setIsMobile] = useState(false);
   const { library: provider } = useEthers();
   const activeAccount = useAppSelector(state => state.account.activeAccount);
   const showConnectModal = useAppSelector(state => state.account.showConnectModal);
@@ -102,6 +103,17 @@ const NavWallet: React.FC<NavWalletProps> = props => {
     NavBarButtonStyle.WARM_WALLET,
     history,
   );
+
+  const handleResize = () => {
+    if (isMobileScreen()) setIsMobile(true);
+    else setIsMobile(false);
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const customDropdownToggle = React.forwardRef<RefType, Props>(({ onClick, value }, ref) => (
     <>
@@ -194,7 +206,7 @@ const NavWallet: React.FC<NavWalletProps> = props => {
         <WalletConnectModal onDismiss={() => setModalStateHandler(false)} />
       )}
       {activeAccount ? (
-        isMobileScreen() ? (
+        isMobile ? (
           walletConnectedContentMobile
         ) : (
           walletConnectedContentDesktop

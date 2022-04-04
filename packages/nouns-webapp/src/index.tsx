@@ -45,7 +45,7 @@ import { ConnectedRouter, connectRouter } from 'connected-react-router';
 import { createBrowserHistory, History } from 'history';
 import { applyMiddleware, createStore, combineReducers, PreloadedState } from 'redux';
 import { routerMiddleware } from 'connected-react-router';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { nounPath } from './utils/history';
 import { push } from 'connected-react-router';
@@ -120,6 +120,7 @@ const ChainSubscriber: React.FC = () => {
   const { account, chainId } = useEthers();
   const currentConfig = getCurrentConfig(chainId?.toString());
   const wsProvider = new WebSocketProvider(currentConfig.app.wsRpcUri);
+  const isSwitching = useAppSelector(state => state.application.isSwitching);
   const nounsAuctionHouseContract = NounsAuctionHouseFactory.connect(
     currentConfig.addresses.nounsAuctionHouseProxy,
     wsProvider,
@@ -140,7 +141,7 @@ const ChainSubscriber: React.FC = () => {
   };
 
   useEffect(() => {
-    if (data && data.auction && currentAuction) {
+    if (data && data.auction && currentAuction && !isSwitching) {
       dispatch(setFullAuction(reduxSafeAuction(currentAuction)));
       dispatch(setLastAuctionNounId(currentAuction.nounId.toNumber()));
       dispatch(
@@ -153,7 +154,7 @@ const ChainSubscriber: React.FC = () => {
         }),
       );
     }
-  }, [data, currentAuction]);
+  }, [data, currentAuction, isSwitching]);
 
   useEffect(() => {
     loadState();
@@ -208,15 +209,19 @@ const ChainSubscriber: React.FC = () => {
     const processAuctionSettled = (nounId: BigNumberish, winner: string, amount: BigNumberish) => {
       dispatch(setAuctionSettled({ nounId, amount, winner }));
     };
-
     // Fetch the current auction
     const currentAuction = await nounsAuctionHouseContract.auction();
     setCurrentAuction(currentAuction);
     // Fetch the previous 24hours of  bids
     const previousBids = await nounsAuctionHouseContract.queryFilter(bidFilter, 0 - BLOCKS_PER_DAY);
-    for (let event of previousBids) {
-      if (event.args === undefined) return;
-      processBidFilter(...(event.args as [BigNumber, string, BigNumber, boolean]), event);
+    const previousERC20Bids = await nounsAuctionHouseContract.queryFilter(
+      bidERC20Filter,
+      0 - BLOCKS_PER_DAY,
+    );
+    for (let event of [...previousBids, ...previousERC20Bids]) {
+      if (event.args !== undefined) {
+        processBidFilter(...(event.args as [BigNumber, string, BigNumber, boolean]), event);
+      }
     }
 
     nounsAuctionHouseContract.on(bidFilter, (nounId, sender, value, extended, event) =>
