@@ -62,7 +62,7 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
               width="40px"
               height="40px"
               viewBox="0 0 40 40"
-              enable-background="new 0 0 40 40"
+              enableBackground="new 0 0 40 40"
               xmlSpace="preserve"
             >
               <path
