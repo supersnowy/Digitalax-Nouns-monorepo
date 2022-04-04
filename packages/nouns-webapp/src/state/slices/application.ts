@@ -16,6 +16,8 @@ interface ApplicationState {
   alertModal: AlertModal;
   eth: number;
   mona: number;
+  chainId: number;
+  walletConnecting: boolean;
 }
 
 const initialState: ApplicationState = {
@@ -27,6 +29,8 @@ const initialState: ApplicationState = {
   },
   eth: 0,
   mona: 0,
+  chainId: 1,
+  walletConnecting: false,
 };
 
 export const applicationSlice = createSlice({
@@ -47,10 +51,16 @@ export const applicationSlice = createSlice({
     setIsSwitching: (state, action: PayloadAction<boolean>) => {
       state.isSwitching = action.payload;
     },
+    setChainId: (state, action: PayloadAction<number>) => {
+      state.chainId = action.payload;
+    },
+    setWalletConnecting: (state, action: PayloadAction<boolean>) => {
+      state.walletConnecting = action.payload;
+    }
   },
 });
 
-export const { setStateBackgroundColor, setAlertModal, setPrices, setIsSwitching } =
+export const { setStateBackgroundColor, setAlertModal, setPrices, setIsSwitching, setChainId, setWalletConnecting } =
   applicationSlice.actions;
 
 export default applicationSlice.reducer;

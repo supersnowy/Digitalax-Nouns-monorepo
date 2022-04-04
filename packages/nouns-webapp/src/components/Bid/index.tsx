@@ -1,10 +1,5 @@
 import { Auction, AuctionHouseContractFunction } from '../../wrappers/nounsAuction';
-import {
-  connectContractToSigner,
-  useEthers,
-  useContractFunction,
-  useContractCall,
-} from '@usedapp/core';
+import { connectContractToSigner, useEthers, useContractFunction } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
 import React, { useEffect, useState, useRef, ChangeEvent, useCallback } from 'react';
 import { utils, BigNumber as EthersBN, ethers } from 'ethers';
@@ -60,8 +55,9 @@ const Bid: React.FC<{
   const activeAccount = useAppSelector(state => state.account.activeAccount);
   const { library, chainId } = useEthers();
   let { auction, auctionEnded, isEthereum } = props;
+  const reduxChainId = useAppSelector(state => state.application.chainId);
   const [paymentOption, setPaymentOption] = useState<string>(isEthereum ? 'ETH' : 'CC0');
-  const currentConfig = getCurrentConfig(chainId?.toString());
+  const currentConfig = getCurrentConfig(reduxChainId?.toString());
 
   const nounsAuctionHouseContract = new NounsAuctionHouseFactory().attach(
     currentConfig.addresses.nounsAuctionHouseProxy,
@@ -142,17 +138,18 @@ const Bid: React.FC<{
         }
       }
     } else {
-      const approval = await cc0Contract.allowance(
-        account,
-        currentConfig.addresses.nounsAuctionHouseProxy,
-      );
-      if (utils.parseEther(approval.toString()) >= utils.parseEther('1000000000')) {
-        console.log('this is inside approval true');
-        setCC0Approved(true);
-        setBidButtonContent({
-          loading: false,
-          content: 'Place bid',
-        });
+      if (account) {
+        const approval = await cc0Contract.allowance(
+          account,
+          currentConfig.addresses.nounsAuctionHouseProxy,
+        );
+        if (utils.parseEther(approval.toString()) >= utils.parseEther('1000000000')) {
+          setCC0Approved(true);
+          setBidButtonContent({
+            loading: false,
+            content: 'Place bid',
+          });
+        }
       }
     }
   };
@@ -277,6 +274,9 @@ const Bid: React.FC<{
         break;
       case 'Mining':
         setBidButtonContent({ loading: true, content: '' });
+        break;
+      case 'Success':
+        setBidButtonContent({ loading: false, content: 'Place bid' });
         break;
       case 'Fail':
         setModal({

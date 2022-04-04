@@ -18,6 +18,7 @@ interface AuctionPageProps {
 const AuctionPage: React.FC<AuctionPageProps> = props => {
   const { initialAuctionId } = props;
   const { chainId } = useEthers();
+  const reduxChainId = useAppSelector(state => state.application.chainId);
   const onDisplayAuction = useOnDisplayAuction();
   const isSwitching = useAppSelector(state => state.application.isSwitching);
   const lastAuctionNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
@@ -44,8 +45,9 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
     }
   }, [lastAuctionNounId, dispatch, initialAuctionId, onDisplayAuction]);
 
-  const title = chainId === CHAIN_ID ? 'DAO Only Auction | Polygon' : 'Public Auction | Ethereum';
-  const isEthereum = chainId === CHAIN_ID ? false : true;
+  const title =
+    reduxChainId === CHAIN_ID ? 'DAO Only Auction | Polygon' : 'Public Auction | Ethereum';
+  const isEthereum = reduxChainId === CHAIN_ID ? false : true;
 
   return (
     <>

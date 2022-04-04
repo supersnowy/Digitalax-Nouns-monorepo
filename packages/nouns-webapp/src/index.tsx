@@ -7,7 +7,12 @@ import { ChainId, DAppProvider, useEthers } from '@usedapp/core';
 import { Web3ReactProvider } from '@web3-react/core';
 import { Web3Provider } from '@ethersproject/providers';
 import account from './state/slices/account';
-import application, { setIsSwitching, setPrices } from './state/slices/application';
+import application, {
+  setChainId,
+  setIsSwitching,
+  setPrices,
+  setWalletConnecting,
+} from './state/slices/application';
 import logs from './state/slices/logs';
 import auction, {
   reduxSafeAuction,
@@ -17,6 +22,7 @@ import auction, {
   setAuctionExtended,
   setAuctionSettled,
   setFullAuction,
+  clearBids,
 } from './state/slices/auction';
 import onDisplayAuction, {
   setLastAuctionNounId,
@@ -50,6 +56,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import { nounPath } from './utils/history';
 import { push } from 'connected-react-router';
 import { Auction } from './wrappers/nounsAuction';
+import { requestSwitchNetwork } from './components/Noun';
 
 dotenv.config();
 
@@ -118,13 +125,15 @@ const BLOCKS_PER_DAY = 6_500;
 const ChainSubscriber: React.FC = () => {
   const dispatch = useAppDispatch();
   const { account, chainId } = useEthers();
-  const currentConfig = getCurrentConfig(chainId?.toString());
+  const reduxChainId = useAppSelector(state => state.application.chainId);
+  const currentConfig = getCurrentConfig(reduxChainId?.toString());
   const wsProvider = new WebSocketProvider(currentConfig.app.wsRpcUri);
   const isSwitching = useAppSelector(state => state.application.isSwitching);
   const nounsAuctionHouseContract = NounsAuctionHouseFactory.connect(
     currentConfig.addresses.nounsAuctionHouseProxy,
     wsProvider,
   );
+  const walletConnecting = useAppSelector(state => state.application.walletConnecting);
   const [currentAuction, setCurrentAuction] = useState<Auction | undefined>();
   const { data } = useQuery(auctionQuery(currentAuction?.nounId.toNumber() ?? 0), {
     skip: !currentAuction?.nounId.toNumber(),
@@ -162,8 +171,19 @@ const ChainSubscriber: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    dispatch(clearBids());
     loadState();
-  }, [chainId]);
+  }, [reduxChainId]);
+
+  useEffect(() => {
+    if (chainId && walletConnecting && account) {
+      requestSwitchNetwork(reduxChainId).then(() => {
+        dispatch(setWalletConnecting(false));
+      });
+    } else if (chainId && !walletConnecting && chainId !== reduxChainId) {
+      dispatch(setChainId(chainId));
+    }
+  }, [chainId, walletConnecting, account]);
 
   const loadState = async () => {
     dispatch(setIsSwitching(true));
@@ -219,9 +239,11 @@ const ChainSubscriber: React.FC = () => {
       0 - BLOCKS_PER_DAY,
     );
     for (let event of [...previousBids, ...previousERC20Bids]) {
-      if (event.args !== undefined) {
-        processBidFilter(...(event.args as [BigNumber, string, BigNumber, boolean]), event);
+      if (event.args === undefined) {
+        dispatch(setIsSwitching(false));
+        return;
       }
+      processBidFilter(...(event.args as [BigNumber, string, BigNumber, boolean]), event);
     }
 
     nounsAuctionHouseContract.on(bidFilter, (nounId, sender, value, extended, event) =>
