@@ -11,7 +11,7 @@ import NounInfoRowHolder from '../NounInfoRowHolder';
 import NounInfoRowButton from '../NounInfoRowButton';
 import { useAppSelector } from '../../hooks';
 
-import config from '../../config';
+import config, { getCurrentConfig } from '../../config';
 import { buildEtherscanAddressLink } from '../../utils/etherscan';
 
 interface NounInfoCardProps {
@@ -23,7 +23,10 @@ interface NounInfoCardProps {
 const NounInfoCard: React.FC<NounInfoCardProps> = props => {
   const { nounId, bidHistoryOnClickHandler, isEthereum } = props;
 
-  const etherscanBaseURL = buildEtherscanAddressLink(config.addresses.nounsToken);
+  const reduxChainId = useAppSelector(state => state.application.chainId);
+  const currentConfig = getCurrentConfig(reduxChainId?.toString());
+
+  const etherscanBaseURL = buildEtherscanAddressLink(currentConfig.addresses.nounsToken);
 
   const etherscanButtonClickHandler = () => window.open(`${etherscanBaseURL}/${nounId}`, '_blank');
 

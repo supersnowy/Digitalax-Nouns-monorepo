@@ -17,7 +17,7 @@ import AuctionActivityNounTitle from '../AuctionActivityNounTitle';
 import AuctionActivityDateHeadline from '../AuctionActivityDateHeadline';
 import BidHistoryBtn from '../BidHistoryBtn';
 import StandaloneNoun from '../StandaloneNoun';
-import config from '../../config';
+import config, { getCurrentConfig } from '../../config';
 import { buildEtherscanAddressLink } from '../../utils/etherscan';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
@@ -28,8 +28,8 @@ import AuctionDescription from '../AuctionDescription';
 import BlueClose from '../../assets/blue-close.png';
 import BlackClose from '../../assets/black-close.png';
 
-const openEtherscanBidHistory = () => {
-  const url = buildEtherscanAddressLink(config.addresses.nounsAuctionHouseProxy);
+const openEtherscanBidHistory = (currentConfig: any) => {
+  const url = buildEtherscanAddressLink(currentConfig.addresses.nounsAuctionHouseProxy);
   window.open(url);
 };
 
@@ -56,6 +56,8 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
 
   const [auctionEnded, setAuctionEnded] = useState(false);
   const [auctionTimer, setAuctionTimer] = useState(false);
+  const reduxChainId = useAppSelector(state => state.application.chainId);
+  const currentConfig = getCurrentConfig(reduxChainId?.toString());
 
   const [showBidHistoryModal, setShowBidHistoryModal] = useState(false);
   const showBidModalHandler = () => {
@@ -91,8 +93,6 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
   }, [auctionTimer, auction]);
 
   if (!auction) return null;
-
-  console.log({ auctionEnded });
 
   return (
     <>
@@ -210,7 +210,7 @@ const AuctionActivity: React.FC<AuctionActivityProps> = (props: AuctionActivityP
               (displayGraphDepComps ? (
                 <BidHistoryBtn onClick={showBidModalHandler} />
               ) : (
-                <BidHistoryBtn onClick={openEtherscanBidHistory} />
+                <BidHistoryBtn onClick={() => openEtherscanBidHistory(currentConfig)} />
               ))}
           </Col>
         </Row>

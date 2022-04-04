@@ -6,7 +6,7 @@ import { nounQuery } from '../../wrappers/subgraph';
 import _HeartIcon from '../../assets/icons/Heart.svg';
 import classes from './NounInfoRowHolder.module.css';
 
-import config from '../../config';
+import config, { getCurrentConfig } from '../../config';
 import { buildEtherscanAddressLink } from '../../utils/etherscan';
 import ShortAddress from '../ShortAddress';
 
@@ -20,7 +20,8 @@ const NounInfoRowHolder: React.FC<NounInfoRowHolderProps> = props => {
   const { nounId } = props;
   const isCool = useAppSelector(state => state.application.isCoolBackground);
   const { loading, error, data } = useQuery(nounQuery(nounId.toString()));
-
+  const reduxChainId = useAppSelector(state => state.application.chainId);
+  const currentConfig = getCurrentConfig(reduxChainId?.toString());
   const etherscanURL = buildEtherscanAddressLink(data && data.noun.owner.id);
 
   if (loading) {
@@ -51,7 +52,7 @@ const NounInfoRowHolder: React.FC<NounInfoRowHolderProps> = props => {
           rel="noreferrer"
         >
           {data.noun.owner.id.toLowerCase() ===
-          config.addresses.nounsAuctionHouseProxy.toLowerCase()
+          currentConfig.addresses.nounsAuctionHouseProxy.toLowerCase()
             ? 'Nouns Auction House'
             : shortAddressComponent}
         </a>

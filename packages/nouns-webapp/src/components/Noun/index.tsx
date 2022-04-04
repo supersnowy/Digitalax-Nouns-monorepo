@@ -5,7 +5,7 @@ import loadingNoun from '../../assets/loading-skull-noun.gif';
 import Image from 'react-bootstrap/Image';
 import { useEthers } from '@usedapp/core';
 import { CHAIN_ID, isMainnet, MAINNET_CHAIN_ID } from '../../config';
-import { AlertModal, setAlertModal } from '../../state/slices/application';
+import { AlertModal, setAlertModal, setChainId } from '../../state/slices/application';
 import { useDispatch } from 'react-redux';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import WalletConnectModal from '../WalletConnectModal';
@@ -61,7 +61,7 @@ export const LoadingNoun = () => {
   );
 };
 
-export const requestSwitchNetwork = (chainId: number) => {
+export const requestSwitchNetwork = async (chainId: number) => {
   const mainnetParams = {
     chainId: '0x1',
     chainName: 'Ethereum Mainnet',
@@ -74,7 +74,7 @@ export const requestSwitchNetwork = (chainId: number) => {
     rpcUrls: ['https://matic-mainnet.chainstacklabs.com'],
     blockExplorerUrls: ['https://explorer-mainnet.maticvigil.com'],
   };
-  window.ethereum
+  return window.ethereum
     .request({
       method: 'wallet_switchEthereumChain',
       params: [
@@ -107,12 +107,13 @@ const Noun: React.FC<{
 }> = props => {
   const { imgPath, type, alt, className, wrapperClassName, isEthereum = false } = props;
   const { chainId } = useEthers();
+  const reduxChainId = useAppSelector(state => state.application.chainId);
   const activeAccount = useAppSelector(state => state.account.activeAccount);
   const dispatch = useAppDispatch();
   const [zoom, setZoom] = useState(false);
   const setModal = useCallback((modal: AlertModal) => dispatch(setAlertModal(modal)), [dispatch]);
   const buttonText =
-    chainId === CHAIN_ID
+    reduxChainId === CHAIN_ID
       ? 'Switch to Public Ethereum Auction'
       : 'Switch to DAO Only Polygon Auction';
 
@@ -124,16 +125,21 @@ const Noun: React.FC<{
     //   message: 'Private auction will be live tomorrow',
     // });
 
-    if (!activeAccount) {
-      dispatch(setShowConnectModal(true));
+    // if (!activeAccount) {
+    //   dispatch(setShowConnectModal(true));
+    //   return;
+    // }
+
+    if (activeAccount) {
+      if (isMainnet(chainId?.toString())) {
+        requestSwitchNetwork(CHAIN_ID);
+      } else {
+        requestSwitchNetwork(MAINNET_CHAIN_ID);
+      }
       return;
     }
 
-    if (isMainnet(chainId?.toString())) {
-      requestSwitchNetwork(CHAIN_ID);
-    } else {
-      requestSwitchNetwork(MAINNET_CHAIN_ID);
-    }
+    dispatch(setChainId(reduxChainId === CHAIN_ID ? MAINNET_CHAIN_ID : CHAIN_ID));
   };
 
   return (

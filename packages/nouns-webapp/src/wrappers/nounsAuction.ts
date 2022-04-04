@@ -1,7 +1,7 @@
 import { useContractCall } from '@usedapp/core';
 import { BigNumber as EthersBN, utils } from 'ethers';
-import { NounsAuctionHouseABI } from '@digitalax/nouns-sdk';
-import config from '../config';
+import { NounsAuctionHouseABI, NounsAuctionHouseFactory } from '@digitalax/nouns-sdk';
+import config, { getCurrentConfig } from '../config';
 import BigNumber from 'bignumber.js';
 import { isNounderNoun } from '../utils/nounderNoun';
 import { useAppSelector } from '../hooks';
@@ -42,15 +42,17 @@ export const useAuction = (auctionHouseProxyAddress: string) => {
 };
 
 export const useAuctionMinBidIncPercentage = () => {
+  const reduxChainId = useAppSelector(state => state.application.chainId);
+  const currentConfig = getCurrentConfig(reduxChainId?.toString());
   const minBidIncrement = useContractCall({
     abi,
-    address: config.addresses.nounsAuctionHouseProxy,
+    address: currentConfig.addresses.nounsAuctionHouseProxy,
     method: 'minBidIncrementPercentage',
     args: [],
   });
 
   if (!minBidIncrement) {
-    return;
+    return new BigNumber(0);
   }
 
   return new BigNumber(minBidIncrement[0]);

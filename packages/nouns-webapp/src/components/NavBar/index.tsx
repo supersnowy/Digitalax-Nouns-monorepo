@@ -6,7 +6,7 @@ import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Nav, Navbar, Container } from 'react-bootstrap';
 import testnetNoun from '../../assets/testnet-noun.png';
-import config, { CHAIN_ID } from '../../config';
+import config, { CHAIN_ID, getCurrentConfig } from '../../config';
 import { utils } from 'ethers';
 import { buildEtherscanHoldingsLink } from '../../utils/etherscan';
 import { ExternalURL, externalURL } from '../../utils/externalURL';
@@ -23,13 +23,8 @@ import { black } from '../../utils/nounBgColors';
 
 const NavBar = () => {
   const activeAccount = useAppSelector(state => state.account.activeAccount);
-  const stateBgColor = useAppSelector(state => state.application.stateBackgroundColor);
   const isCool = useAppSelector(state => state.application.isCoolBackground);
   const history = useHistory();
-  const ethBalance = useEtherBalance(config.addresses.nounsDaoExecutor);
-  const lidoBalanceAsETH = useLidoBalance();
-  const treasuryBalance = ethBalance && lidoBalanceAsETH && ethBalance.add(lidoBalanceAsETH);
-  const daoEtherscanLink = buildEtherscanHoldingsLink(config.addresses.nounsDaoExecutor);
 
   const useStateBg =
     // history.location.pathname === '/' ||

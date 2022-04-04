@@ -10,11 +10,15 @@ import { TrezorConnector } from '@web3-react/trezor-connector';
 import { FortmaticConnector } from '@web3-react/fortmatic-connector';
 import config, { CHAIN_ID } from '../../config';
 import classes from './WalletConnectModal.module.css';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { setWalletConnecting } from '../../state/slices/application';
 
 const WalletConnectModal: React.FC<{ onDismiss: () => void }> = props => {
   const { onDismiss } = props;
+  const dispatch = useAppDispatch();
   const { activate } = useEthers();
   const supportedChainIds = [CHAIN_ID, 80001, 1, 2, 3, 5];
+  const reduxChainId = useAppSelector(state => state.application.chainId);
 
   const wallets = (
     <div className={classes.walletConnectModal}>
@@ -23,6 +27,7 @@ const WalletConnectModal: React.FC<{ onDismiss: () => void }> = props => {
           const injected = new InjectedConnector({
             supportedChainIds,
           });
+          dispatch(setWalletConnecting(true));
           activate(injected);
         }}
         walletType={WALLET_TYPE.metamask}

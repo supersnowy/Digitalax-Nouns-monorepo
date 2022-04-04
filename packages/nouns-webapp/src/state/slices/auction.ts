@@ -83,6 +83,9 @@ export const auctionSlice = createSlice({
       console.log(`from set full auction: `, action.payload);
       state.activeAuction = reduxSafeAuction(action.payload);
     },
+    clearBids: state => {
+      state.bids = [];
+    },
     appendBid: (state, action: PayloadAction<BidEvent>) => {
       if (!(state.activeAuction && auctionsEqual(state.activeAuction, action.payload))) return;
       if (containsBid(state.bids, action.payload)) return;
@@ -113,6 +116,7 @@ export const {
   setAuctionExtended,
   setAuctionSettled,
   setFullAuction,
+  clearBids,
 } = auctionSlice.actions;
 
 export default auctionSlice.reducer;
