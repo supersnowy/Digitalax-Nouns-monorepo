@@ -52,7 +52,7 @@ const StandaloneNoun: React.FC<StandaloneNounProps> = (props: StandaloneNounProp
 
   return (
     <Link
-      to={'/noun/' + nounId.toString()}
+      to={'/cc0/' + nounId.toString()}
       className={classes.clickableNoun}
       onClick={onClickHandler}
     >
@@ -75,7 +75,7 @@ export const StandaloneNounCircular: React.FC<StandaloneCircularNounProps> = (
 
   return (
     <Link
-      to={'/noun/' + nounId.toString()}
+      to={'/cc0/' + nounId.toString()}
       className={classes.clickableNoun}
       onClick={onClickHandler}
     >

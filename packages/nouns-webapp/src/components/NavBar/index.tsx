@@ -33,7 +33,7 @@ const NavBar = () => {
 
   const useStateBg =
     // history.location.pathname === '/' ||
-    history.location.pathname.includes('/noun/') || history.location.pathname.includes('/auction/');
+    history.location.pathname.includes('/cc0/') || history.location.pathname.includes('/auction/');
 
   const nonWalletButtonStyle = !useStateBg
     ? NavBarButtonStyle.WHITE_INFO
