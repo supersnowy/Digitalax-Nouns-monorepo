@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { isMobileScreen } from '../../utils/isMobile';
 import { black, primary } from '../../utils/nounBgColors';
+import { CHAIN_ID } from '../../config';
 
 interface WinnerProps {
   winner: string;
@@ -16,6 +17,7 @@ interface WinnerProps {
 const Winner: React.FC<WinnerProps> = props => {
   const { winner, isNounders, isEthereum = false } = props;
   const activeAccount = useAppSelector(state => state.account.activeAccount);
+  const reduxChainId = useAppSelector(state => state.application.chainId);
 
   const isCool = useAppSelector(state => state.application.isCoolBackground);
   const isMobile = isMobileScreen();
@@ -30,7 +32,10 @@ const Winner: React.FC<WinnerProps> = props => {
       {winner ? (
         <ShortAddress size={40} isEthereum={isEthereum} address={winner} avatar={true} />
       ) : (
-        'Moved to Polygon Private Auction'
+        <>
+
+        {reduxChainId === CHAIN_ID ? '0x00...000' : 'Moved to Polygon Private Auction'}
+        </>
       )}
     </>
   );

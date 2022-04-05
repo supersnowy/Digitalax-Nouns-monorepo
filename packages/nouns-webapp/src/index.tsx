@@ -31,7 +31,7 @@ import onDisplayAuction, {
 import { ApolloProvider, useQuery } from '@apollo/client';
 import { auctionQuery, clientFactory, latestAuctionsQuery } from './wrappers/subgraph';
 import { useEffect } from 'react';
-import pastAuctions, { addPastAuctions } from './state/slices/pastAuctions';
+import pastAuctions, { addPastAuctions, clearPastAuctions } from './state/slices/pastAuctions';
 import LogsUpdater from './state/updaters/logs';
 import config, {
   CHAIN_ID,
@@ -170,7 +170,8 @@ const ChainSubscriber: React.FC = () => {
 
   useEffect(() => {
     dispatch(clearBids());
-  }, [reduxChainId]);
+    dispatch(clearPastAuctions());
+  }, [reduxChainId, chainId]);
 
   useEffect(() => {
     if (chainId && walletConnecting && account) {
@@ -205,11 +206,11 @@ const ChainSubscriber: React.FC = () => {
     ) => {
       const timestamp = (await event.getBlock()).timestamp;
       const transactionHash = event.transactionHash;
-      if (nounId.toString() === cAuction.nounId.toString()) {
+      // if (nounId.toString() === cAuction.nounId.toString()) {
         dispatch(
           appendBid(reduxSafeBid({ nounId, sender, value, extended, transactionHash, timestamp })),
         );
-      }
+      // }
     };
     const processAuctionCreated = (
       nounId: BigNumberish,
@@ -240,6 +241,7 @@ const ChainSubscriber: React.FC = () => {
       bidERC20Filter,
       0 - currentConfig.blocksPerDay,
     );
+
     for (let event of [...previousBids, ...previousERC20Bids]) {
       if (event.args === undefined) {
         dispatch(setIsSwitching(false));

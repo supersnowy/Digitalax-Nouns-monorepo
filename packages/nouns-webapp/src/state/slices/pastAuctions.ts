@@ -13,7 +13,6 @@ const initialState: PastAuctionsState = {
 const reduxSafePastAuctions = (data: any): AuctionState[] => {
   const auctions = data.data.auctions as any[];
   if (auctions.length < 0) return [];
-  console.log({ auctions });
   const pastAuctions: AuctionState[] = auctions.map(auction => {
     return {
       activeAuction: {
@@ -50,9 +49,12 @@ const pastAuctionsSlice = createSlice({
     addPastAuctions: (state, action: PayloadAction<any>) => {
       state.pastAuctions = reduxSafePastAuctions(action.payload);
     },
+    clearPastAuctions: (state) => {
+      state.pastAuctions = [];
+    }
   },
 });
 
-export const { addPastAuctions } = pastAuctionsSlice.actions;
+export const { addPastAuctions, clearPastAuctions } = pastAuctionsSlice.actions;
 
 export default pastAuctionsSlice.reducer;
