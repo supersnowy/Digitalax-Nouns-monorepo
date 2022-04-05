@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
@@ -120,8 +120,6 @@ const Updaters = () => {
   );
 };
 
-const BLOCKS_PER_DAY = 6_500;
-
 const ChainSubscriber: React.FC = () => {
   const dispatch = useAppDispatch();
   const { account, chainId } = useEthers();
@@ -172,7 +170,6 @@ const ChainSubscriber: React.FC = () => {
 
   useEffect(() => {
     dispatch(clearBids());
-    loadState();
   }, [reduxChainId]);
 
   useEffect(() => {
@@ -197,6 +194,8 @@ const ChainSubscriber: React.FC = () => {
     const extendedFilter = nounsAuctionHouseContract.filters.AuctionExtended(null, null);
     const createdFilter = nounsAuctionHouseContract.filters.AuctionCreated(null, null, null, null);
     const settledFilter = nounsAuctionHouseContract.filters.AuctionSettled(null, null, null);
+    const cAuction = await nounsAuctionHouseContract.auction();
+    setCurrentAuction(cAuction);
     const processBidFilter = async (
       nounId: BigNumberish,
       sender: string,
@@ -206,9 +205,11 @@ const ChainSubscriber: React.FC = () => {
     ) => {
       const timestamp = (await event.getBlock()).timestamp;
       const transactionHash = event.transactionHash;
-      dispatch(
-        appendBid(reduxSafeBid({ nounId, sender, value, extended, transactionHash, timestamp })),
-      );
+      if (nounId.toString() === cAuction.nounId.toString()) {
+        dispatch(
+          appendBid(reduxSafeBid({ nounId, sender, value, extended, transactionHash, timestamp })),
+        );
+      }
     };
     const processAuctionCreated = (
       nounId: BigNumberish,
@@ -230,13 +231,14 @@ const ChainSubscriber: React.FC = () => {
       dispatch(setAuctionSettled({ nounId, amount, winner }));
     };
     // Fetch the current auction
-    const currentAuction = await nounsAuctionHouseContract.auction();
-    setCurrentAuction(currentAuction);
     // Fetch the previous 24hours of  bids
-    const previousBids = await nounsAuctionHouseContract.queryFilter(bidFilter, 0 - BLOCKS_PER_DAY);
+    const previousBids = await nounsAuctionHouseContract.queryFilter(
+      bidFilter,
+      0 - currentConfig.blocksPerDay,
+    );
     const previousERC20Bids = await nounsAuctionHouseContract.queryFilter(
       bidERC20Filter,
-      0 - BLOCKS_PER_DAY,
+      0 - currentConfig.blocksPerDay,
     );
     for (let event of [...previousBids, ...previousERC20Bids]) {
       if (event.args === undefined) {
@@ -263,6 +265,8 @@ const ChainSubscriber: React.FC = () => {
     );
     dispatch(setIsSwitching(false));
   };
+
+  useMemo(() => loadState(), [reduxChainId]);
 
   return <></>;
 };

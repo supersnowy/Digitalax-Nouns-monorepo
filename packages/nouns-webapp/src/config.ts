@@ -109,11 +109,13 @@ const getAddresses = (chainId: SupportedChains): ContractAddresses => {
 const config = {
   app: app[CHAIN_ID],
   addresses: getAddresses(CHAIN_ID),
+  blocksPerDay: 42_000,
 };
 
 export const mainnetConfig = {
   app: app[MAINNET_CHAIN_ID],
   addresses: getAddresses(MAINNET_CHAIN_ID),
+  blocksPerDay: 6_500,
 };
 
 export const isPolygon = (chainId: string = '137') => {
