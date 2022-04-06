@@ -207,9 +207,9 @@ const ChainSubscriber: React.FC = () => {
       const timestamp = (await event.getBlock()).timestamp;
       const transactionHash = event.transactionHash;
       // if (nounId.toString() === cAuction.nounId.toString()) {
-        dispatch(
-          appendBid(reduxSafeBid({ nounId, sender, value, extended, transactionHash, timestamp })),
-        );
+      dispatch(
+        appendBid(reduxSafeBid({ nounId, sender, value, extended, transactionHash, timestamp })),
+      );
       // }
     };
     const processAuctionCreated = (
@@ -286,8 +286,9 @@ const PastAuctions: React.FC = () => {
 };
 
 const ApolloWrapper = ({ children }: { children: ReactNode }) => {
-  const { chainId } = useEthers();
-  const currentConfig = getCurrentConfig(chainId?.toString());
+  const reduxChainId = useAppSelector(state => state.application.chainId);
+
+  const currentConfig = getCurrentConfig(reduxChainId?.toString());
   const client = clientFactory(currentConfig.app.subgraphApiUri);
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
