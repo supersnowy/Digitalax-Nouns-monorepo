@@ -23,7 +23,7 @@ yarn run graph auth https://api.thegraph.com/deploy/ $ACCESS_TOKEN
 ### Create subgraph.yaml from config template
 
 ```sh
-yarn prepare:[network] # Supports rinkeby and mainnet
+yarn prepare:[network] # Supports rinkeby, mainnet and polygon
 ```
 
 ### Generate types to use with Typescript

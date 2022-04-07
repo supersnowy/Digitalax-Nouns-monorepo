@@ -1,12 +1,12 @@
 {
   "network": "matic",
   "nounsToken": {
-    "address": "0x9C41EaA62D0bd49fC43F7057E0a9077F6CbF07e9",
-    "startBlock": 26322185
+    "address": "0x9F8475Da44D8E96a9b2d8284a02Fb14a0772854C",
+    "startBlock": 26581308
   },
   "nounsAuctionHouse": {
-    "address": "0x18abeb7c29808d75b7E923BcEEA9fFBcEaD3ff20",
-    "startBlock": 26322208
+    "address": "0x45967a5E5207986FD0F27C88047F5cd776D74F06",
+    "startBlock": 26581321
   },
   "nounsDAO": {
     "address": "0x4618033a675711827306b7baCe4E95963e94F240",

@@ -40,11 +40,11 @@ export function handleNounCreated(event: NounCreated): void {
             if (res.get('animation_url').kind == JSONValueKind.STRING) {
               noun.animation = res.get('animation_url').toString();
             }
-            if (res.get('name').kind == JSONValueKind.STRING) {
-              noun.name = res.get('name').toString();
-            }
             if (res.get('description').kind == JSONValueKind.STRING) {
               noun.description = res.get('description').toString();
+            }
+            if (res.get('name').kind == JSONValueKind.STRING) {
+              noun.name = res.get('name').toString();
             }
             if (res.get('attributes').kind == JSONValueKind.ARRAY) {
               let attributes = res.get('attributes').toArray();

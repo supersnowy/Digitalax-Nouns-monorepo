@@ -12,6 +12,8 @@ import { Bytes, ipfs, json, JSONValueKind } from '@graphprotocol/graph-ts/index'
 export function handleAuctionCreated(event: AuctionCreated): void {
   let nounId = event.params.nounId.toString();
   let anticipatedNoun = new AnticipatedNoun(nounId);
+
+  let auction = new Auction(nounId);
   const anticipatedUri = event.params.anticipatedNoun;
 
     anticipatedNoun.tokenUri = anticipatedUri;
@@ -64,8 +66,6 @@ export function handleAuctionCreated(event: AuctionCreated): void {
 
   anticipatedNoun.save();
 
-
-  let auction = new Auction(nounId);
   auction.anticipatedNoun = anticipatedNoun.id;
   auction.amount = BigInt.fromI32(0);
   auction.startTime = event.params.startTime;
