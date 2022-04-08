@@ -153,8 +153,11 @@ const ChainSubscriber: React.FC = () => {
       dispatch(setFullAuction(reduxSafeAuction(currentAuction)));
       dispatch(setLastAuctionNounId(currentAuction.nounId.toNumber()));
       if (data.auction.anticipatedNoun.tokenUri) {
+        console.log(data.auction.anticipatedNoun);
         if (!data.auction.anticipatedNoun.name) {
           fetchFromIpfs(data.auction.anticipatedNoun.tokenUri).then(res => {
+            console.log('this is fetching nouns');
+            console.log(res);
             dispatch(
               setFullAuction({
                 ...currentAuction,

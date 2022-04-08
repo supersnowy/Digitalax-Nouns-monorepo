@@ -22,11 +22,13 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
   const { chainId } = useEthers();
   const reduxChainId = useAppSelector(state => state.application.chainId);
   const onDisplayAuction = useOnDisplayAuction();
-  const [realAuction, setRealAuction] = useState<AuctionType | undefined>();
+  const [realAuction, setRealAuction] = useState<AuctionType | undefined>(onDisplayAuction);
   const isSwitching = useAppSelector(state => state.application.isSwitching);
   const lastAuctionNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
   const onDisplayAuctionNounId = onDisplayAuction?.nounId.toNumber();
   const dispatch = useAppDispatch();
+  console.log({ onDisplayAuction });
+  console.log({ realAuction });
 
   useEffect(() => {
     if (typeof lastAuctionNounId === 'undefined') return;
@@ -50,7 +52,7 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
 
   useEffect(() => {
     if (onDisplayAuction) {
-      if (!onDisplayAuction.name && onDisplayAuction.tokenUri) {
+      if (onDisplayAuction.tokenUri) {
         fetchFromIpfs(onDisplayAuction.tokenUri || '').then(res => {
           console.log({ res });
           setRealAuction({
@@ -65,7 +67,7 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
         setRealAuction(onDisplayAuction);
       }
     }
-  }, [onDisplayAuctionNounId]);
+  }, [onDisplayAuctionNounId, isSwitching, onDisplayAuction?.tokenUri]);
 
   const title =
     reduxChainId === CHAIN_ID ? 'DAO Only Auction | Polygon' : 'Public Auction | Ethereum';
@@ -115,7 +117,11 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
           </div>
         </div>
       ) : (
-        <Auction auction={realAuction} isEthereum={isEthereum} title={title} />
+        <Auction
+          auction={onDisplayAuction?.name ? onDisplayAuction : realAuction}
+          isEthereum={isEthereum}
+          title={title}
+        />
       )}
       <Documentation />
     </>
