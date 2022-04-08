@@ -21,6 +21,7 @@ const reduxSafePastAuctions = (data: any): AuctionState[] => {
         name: auction.anticipatedNoun.name,
         image: auction.anticipatedNoun.image,
         animation: auction.anticipatedNoun.animation,
+        tokenUri: auction.anticipatedNoun.tokenUri,
         bidder: auction.bidder ? auction.bidder.id : '',
         startTime: BigNumber.from(auction.startTime).toJSON(),
         endTime: BigNumber.from(auction.endTime).toJSON(),
@@ -49,9 +50,9 @@ const pastAuctionsSlice = createSlice({
     addPastAuctions: (state, action: PayloadAction<any>) => {
       state.pastAuctions = reduxSafePastAuctions(action.payload);
     },
-    clearPastAuctions: (state) => {
+    clearPastAuctions: state => {
       state.pastAuctions = [];
-    }
+    },
   },
 });
 

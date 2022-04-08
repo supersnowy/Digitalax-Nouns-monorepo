@@ -6,10 +6,12 @@ import { setOnDisplayAuctionNounId } from '../../state/slices/onDisplayAuction';
 import { push } from 'connected-react-router';
 import { nounPath } from '../../utils/history';
 import useOnDisplayAuction from '../../wrappers/onDisplayAuction';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { CHAIN_ID } from '../../config';
 import classes from './Auction.module.css';
+import { fetchFromIpfs } from '../../utils/ipfs';
+import { Auction as AuctionType } from '../../wrappers/nounsAuction';
 
 interface AuctionPageProps {
   initialAuctionId?: number;
@@ -20,6 +22,7 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
   const { chainId } = useEthers();
   const reduxChainId = useAppSelector(state => state.application.chainId);
   const onDisplayAuction = useOnDisplayAuction();
+  const [realAuction, setRealAuction] = useState<AuctionType | undefined>();
   const isSwitching = useAppSelector(state => state.application.isSwitching);
   const lastAuctionNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
   const onDisplayAuctionNounId = onDisplayAuction?.nounId.toNumber();
@@ -44,6 +47,25 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
       }
     }
   }, [lastAuctionNounId, dispatch, initialAuctionId, onDisplayAuction]);
+
+  useEffect(() => {
+    if (onDisplayAuction) {
+      if (!onDisplayAuction.name && onDisplayAuction.tokenUri) {
+        fetchFromIpfs(onDisplayAuction.tokenUri || '').then(res => {
+          console.log({ res });
+          setRealAuction({
+            ...onDisplayAuction,
+            name: res.name,
+            description: res.description,
+            image: res?.image,
+            animation: res?.animation,
+          });
+        });
+      } else {
+        setRealAuction(onDisplayAuction);
+      }
+    }
+  }, [onDisplayAuctionNounId]);
 
   const title =
     reduxChainId === CHAIN_ID ? 'DAO Only Auction | Polygon' : 'Public Auction | Ethereum';
@@ -93,7 +115,7 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
           </div>
         </div>
       ) : (
-        <Auction auction={onDisplayAuction} isEthereum={isEthereum} title={title} />
+        <Auction auction={realAuction} isEthereum={isEthereum} title={title} />
       )}
       <Documentation />
     </>
