@@ -57,6 +57,7 @@ import { nounPath } from './utils/history';
 import { push } from 'connected-react-router';
 import { Auction } from './wrappers/nounsAuction';
 import { requestSwitchNetwork } from './components/Noun';
+import { fetchFromIpfs } from './utils/ipfs';
 
 dotenv.config();
 
@@ -151,15 +152,33 @@ const ChainSubscriber: React.FC = () => {
     if (data && data.auction && currentAuction && !isSwitching) {
       dispatch(setFullAuction(reduxSafeAuction(currentAuction)));
       dispatch(setLastAuctionNounId(currentAuction.nounId.toNumber()));
-      dispatch(
-        setFullAuction({
-          ...currentAuction,
-          name: data.auction.anticipatedNoun.name,
-          description: data.auction.anticipatedNoun.description,
-          image: data.auction.anticipatedNoun.image,
-          animation: data.auction.anticipatedNoun.animation,
-        }),
-      );
+      if (data.auction.anticipatedNoun.tokenUri) {
+        if (!data.auction.anticipatedNoun.name) {
+          fetchFromIpfs(data.auction.anticipatedNoun.tokenUri).then(res => {
+            dispatch(
+              setFullAuction({
+                ...currentAuction,
+                name: res?.name,
+                description: res?.description,
+                image: res?.image,
+                animation: res?.animation,
+                tokenUri: data.auction.anticipatedNoun.tokenUri,
+              }),
+            );
+          });
+        } else {
+          dispatch(
+            setFullAuction({
+              ...currentAuction,
+              name: data.auction.anticipatedNoun.name,
+              description: data.auction.anticipatedNoun.description,
+              image: data.auction.anticipatedNoun.image,
+              animation: data.auction.anticipatedNoun.animation,
+              tokenUri: data.auction.anticipatedNoun.tokenUri,
+            }),
+          );
+        }
+      }
     }
   }, [data, currentAuction, isSwitching]);
 

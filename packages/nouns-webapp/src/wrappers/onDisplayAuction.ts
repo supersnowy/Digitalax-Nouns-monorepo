@@ -10,6 +10,7 @@ const deserializeAuction = (reduxSafeAuction: Auction): Auction => {
     description: reduxSafeAuction.description,
     image: reduxSafeAuction.image,
     animation: reduxSafeAuction.animation,
+    tokenUri: reduxSafeAuction.tokenUri,
     amount: BigNumber.from(reduxSafeAuction.amount),
     bidder: reduxSafeAuction.bidder,
     startTime: BigNumber.from(reduxSafeAuction.startTime),

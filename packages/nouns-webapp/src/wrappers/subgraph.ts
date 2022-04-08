@@ -49,6 +49,7 @@ export const auctionQuery = (auctionId: number) => gql`
 			name
 			description
 			image
+			tokenUri
 			animation
 			attributes {
 				trait
@@ -140,6 +141,7 @@ export const latestAuctionsQuery = () => gql`
         description
         image
         animation
+        tokenUri
         attributes {
           trait
           value

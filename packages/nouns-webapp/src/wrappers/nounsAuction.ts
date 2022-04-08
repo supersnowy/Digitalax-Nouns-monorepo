@@ -21,6 +21,7 @@ export interface Auction {
   description?: string;
   image?: string;
   animation?: string;
+  tokenUri?: string;
   amount: EthersBN;
   bidder: string;
   endTime: EthersBN;
