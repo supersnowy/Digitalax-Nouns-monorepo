@@ -60,7 +60,7 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
             name: res.name,
             description: res.description,
             image: res?.image,
-            animation: res?.animation,
+            animation: res?.animation_url,
           });
         });
       } else {
