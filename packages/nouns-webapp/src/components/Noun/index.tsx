@@ -109,6 +109,7 @@ const Noun: React.FC<{
   const { chainId } = useEthers();
   const reduxChainId = useAppSelector(state => state.application.chainId);
   const activeAccount = useAppSelector(state => state.account.activeAccount);
+  const currentAuctionId = useAppSelector(state => state.onDisplayAuction.onDisplayAuctionNounId);
   const dispatch = useAppDispatch();
   const [zoom, setZoom] = useState(false);
   const setModal = useCallback((modal: AlertModal) => dispatch(setAlertModal(modal)), [dispatch]);
@@ -145,7 +146,7 @@ const Noun: React.FC<{
   return (
     <div>
       <div className={`${!zoom ? classes.imgWrapper : classes.imgZoomWrapper} ${wrapperClassName}`}>
-        {type === 'image' ? (
+        {currentAuctionId === 9 ? (
           <img
             className={`${classes.img} ${
               isEthereum ? classes.ethereumBorder : classes.polygonBorder
@@ -154,16 +155,28 @@ const Noun: React.FC<{
             alt={alt}
           />
         ) : (
-          <video
-            autoPlay
-            loop
-            muted
-            className={`${classes.video} ${
-              isEthereum ? classes.ethereumBorder : classes.polygonBorder
-            } ${className}`}
-          >
-            <source src={imgPath} />
-          </video>
+          <>
+            {type === 'image' ? (
+              <img
+                className={`${classes.img} ${
+                  isEthereum ? classes.ethereumBorder : classes.polygonBorder
+                } ${className}`}
+                src={imgPath ? imgPath : loadingNoun}
+                alt={alt}
+              />
+            ) : (
+              <video
+                autoPlay
+                loop
+                muted
+                className={`${classes.video} ${
+                  isEthereum ? classes.ethereumBorder : classes.polygonBorder
+                } ${className}`}
+              >
+                <source src={imgPath} />
+              </video>
+            )}
+          </>
         )}
         <button className={classes.zoomBtn} onClick={() => setZoom(!zoom)}>
           <img src="/zoom_btn.png" />
