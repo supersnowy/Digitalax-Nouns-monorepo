@@ -100,9 +100,10 @@ const Auction: React.FC<AuctionProps> = props => {
           </Col>
           <Col lg={{ span: 6 }} className={classes.auctionActivityCol}>
             {currentAuction &&
-              (isNounderNoun(currentAuction.nounId)
-                ? nounderNounContent
-                : currentAuctionActivityContent)}
+              // (isNounderNoun(currentAuction.nounId)
+              //   ? nounderNounContent
+              //   : currentAuctionActivityContent)}
+              currentAuctionActivityContent}
           </Col>
         </Row>
       </Container>

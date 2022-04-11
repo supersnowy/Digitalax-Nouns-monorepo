@@ -152,7 +152,6 @@ const ChainSubscriber: React.FC = () => {
     if (data && data.auction && currentAuction && !isSwitching) {
       dispatch(setFullAuction(reduxSafeAuction(currentAuction)));
       dispatch(setLastAuctionNounId(currentAuction.nounId.toNumber()));
-      console.log({ data });
       if (data.auction.anticipatedNoun.tokenUri) {
         if (!data.auction.anticipatedNoun.name) {
           fetchFromIpfs(data.auction.anticipatedNoun.tokenUri).then(res => {
