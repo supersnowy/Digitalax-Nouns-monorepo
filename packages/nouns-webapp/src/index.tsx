@@ -103,7 +103,7 @@ export type AppDispatch = typeof store.dispatch;
 
 // prettier-ignore
 const useDappConfig = {
-  readOnlyChainId: MAINNET_CHAIN_ID,
+  readOnlyChainId: CHAIN_ID,
   readOnlyUrls: {
     [ChainId.Rinkeby]: createNetworkHttpUrl('rinkeby'),
     [ChainId.Mainnet]: createNetworkHttpUrl('mainnet'),
