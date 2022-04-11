@@ -52,8 +52,8 @@ export function handleNounCreated(event: NounCreated): void {
                 if (attributes[i].kind == JSONValueKind.OBJECT) {
                   let attribute = attributes[i].toObject();
                   let nounAttributes = new NounAttributes('noun-' + noun.id + i.toString());
-                  nounAttributes.trait = null;
                   nounAttributes.value = null;
+                  nounAttributes.trait = null;
 
                   if (attribute.get('trait_type').kind == JSONValueKind.STRING) {
                     nounAttributes.trait = attribute.get('trait_type').toString();

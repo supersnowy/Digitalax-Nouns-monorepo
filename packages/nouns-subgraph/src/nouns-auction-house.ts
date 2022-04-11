@@ -4,7 +4,12 @@ import {
   AuctionCreated,
   AuctionExtended,
   AuctionSettled, AuctionTokenMinted,
+  NounsAuctionHouse as NounsAuctionHouseContract
 } from '../generated/NounsAuctionHouse/NounsAuctionHouse';
+import {
+  NounsToken as NounsTokenContract
+} from '../generated/NounsToken/NounsToken';
+
 import { Auction, Noun, Bid, AnticipatedNoun, NounAttributes } from '../generated/schema';
 import { getOrCreateAccount } from './utils/helpers';
 import { Bytes, ipfs, json, JSONValueKind } from '@graphprotocol/graph-ts/index';
@@ -131,8 +136,8 @@ export function handleAuctionBidERC20(event: AuctionBidERC20): void {
   bid.amount = auction.amount;
   bid.anticipatedNoun = auction.anticipatedNoun;
   bid.txIndex = event.transaction.index;
-  bid.blockNumber = event.block.number;
   bid.blockTimestamp = event.block.timestamp;
+  bid.blockNumber = event.block.number;
   bid.auction = auction.id;
   bid.isERC20 = true;
   bid.save();
@@ -151,6 +156,76 @@ export function handleAuctionExtended(event: AuctionExtended): void {
   }
 
   auction.endTime = event.params.endTime;
+
+  // Setup anticipated noun again
+  let anticipatedNoun = AnticipatedNoun.load(nounId);
+  if(!anticipatedNoun){
+    anticipatedNoun = new AnticipatedNoun(nounId);
+  }
+
+  const auctionHouse = NounsAuctionHouseContract.bind(event.address);
+
+  const tokenAddress = auctionHouse.try_nouns();
+  if(!tokenAddress.reverted){
+     const nounsTokenContract = NounsTokenContract.bind(tokenAddress.value);
+     const anticipatedNounUri = nounsTokenContract.try_anticipateNoun(auction.endTime.plus(BigInt.fromI32(1)));
+     if(!anticipatedNounUri.reverted){
+       const anticipatedUri = anticipatedNounUri.value;
+
+        anticipatedNoun.tokenUri = anticipatedUri;
+        if (anticipatedNoun.tokenUri.includes('ipfs/')) {
+          let tokenHash = anticipatedNoun.tokenUri.split('ipfs/')[1];
+          let tokenBytes = ipfs.cat(tokenHash);
+          if (tokenBytes) {
+            let data = json.try_fromBytes(tokenBytes as Bytes);
+            if (data.isOk) {
+              if (data.value.kind == JSONValueKind.OBJECT) {
+                let res = data.value.toObject();
+                if (res.get('image').kind == JSONValueKind.STRING) {
+                  anticipatedNoun.image = res.get('image').toString();
+                }
+                if (res.get('animation_url').kind == JSONValueKind.STRING) {
+                  anticipatedNoun.animation = res.get('animation_url').toString();
+                }
+                if (res.get('name').kind == JSONValueKind.STRING) {
+                  anticipatedNoun.name = res.get('name').toString();
+                }
+                if (res.get('description').kind == JSONValueKind.STRING) {
+                  anticipatedNoun.description = res.get('description').toString();
+                }
+                if (res.get('attributes').kind == JSONValueKind.ARRAY) {
+                  let attributes = res.get('attributes').toArray();
+                  for (let i = 0; i < attributes.length; i += 1) {
+                    if (attributes[i].kind == JSONValueKind.OBJECT) {
+                      let attribute = attributes[i].toObject();
+                      let nounAttributes = new NounAttributes('anticipatedNoun-' + anticipatedNoun.id + i.toString());
+                      nounAttributes.trait = null;
+                      nounAttributes.value = null;
+
+                      if (attribute.get('trait_type').kind == JSONValueKind.STRING) {
+                        nounAttributes.trait = attribute.get('trait_type').toString();
+                      }
+                      if (attribute.get('value').kind == JSONValueKind.STRING) {
+                        nounAttributes.value = attribute.get('value').toString();
+                      }
+                      nounAttributes.save();
+                      let attrs = anticipatedNoun.attributes;
+                      attrs.push(nounAttributes.id);
+                      anticipatedNoun.attributes = attrs;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+      anticipatedNoun.save();
+
+      auction.anticipatedNoun = anticipatedNoun.id;
+     }
+  }
+
   auction.save();
 }
 
