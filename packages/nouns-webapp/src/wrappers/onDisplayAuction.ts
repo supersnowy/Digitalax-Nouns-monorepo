@@ -59,22 +59,22 @@ const useOnDisplayAuction = (): Auction | undefined => {
     return deserializeAuction(currentAuction);
   } else {
     // nounder auction
-    if (isNounderNoun(BigNumber.from(onDisplayAuctionNounId))) {
-      const emptyNounderAuction = generateEmptyNounderAuction(
-        BigNumber.from(onDisplayAuctionNounId),
-        pastAuctions,
-      );
+    // if (isNounderNoun(BigNumber.from(onDisplayAuctionNounId))) {
+    //   const emptyNounderAuction = generateEmptyNounderAuction(
+    //     BigNumber.from(onDisplayAuctionNounId),
+    //     pastAuctions,
+    //   );
 
-      return deserializeAuction(emptyNounderAuction);
-    } else {
-      // past auction
-      const reduxSafeAuction: Auction | undefined = pastAuctions.find(auction => {
-        const nounId = auction.activeAuction && BigNumber.from(auction.activeAuction.nounId);
-        return nounId && nounId.toNumber() === onDisplayAuctionNounId;
-      })?.activeAuction;
+    //   return deserializeAuction(emptyNounderAuction);
+    // } else {
+    // past auction
+    const reduxSafeAuction: Auction | undefined = pastAuctions.find(auction => {
+      const nounId = auction.activeAuction && BigNumber.from(auction.activeAuction.nounId);
+      return nounId && nounId.toNumber() === onDisplayAuctionNounId;
+    })?.activeAuction;
 
-      return reduxSafeAuction ? deserializeAuction(reduxSafeAuction) : undefined;
-    }
+    return reduxSafeAuction ? deserializeAuction(reduxSafeAuction) : undefined;
+    // }
   }
 };
 
