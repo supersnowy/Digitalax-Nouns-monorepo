@@ -18,7 +18,7 @@ const bidItem = (bid: Bid, index: number, classes: any, isEthereum?: boolean) =>
     bid.timestamp.toNumber() * 1000,
   ).format('hh:mm a')}`;
 
-  const txLink = buildEtherscanTxLink(bid.transactionHash);
+  const txLink = buildEtherscanTxLink(bid.transactionHash, isEthereum);
   const isMobile = window.innerWidth < 992;
 
   return (

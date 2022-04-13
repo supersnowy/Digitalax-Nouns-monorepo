@@ -1,5 +1,5 @@
 import { ChainId } from '@usedapp/core';
-import { CHAIN_ID, ETHERSCAN_API_KEY } from '../config';
+import { CHAIN_ID, ETHERSCAN_API_KEY, MAINNET_CHAIN_ID } from '../config';
 
 const getBaseURL = (network: ChainId) => {
   switch (network) {
@@ -8,7 +8,7 @@ const getBaseURL = (network: ChainId) => {
     case ChainId.Mumbai:
       return 'https://mumbai.polygonscan.com';
     case ChainId.Polygon:
-      return 'https://polygonscan.com';
+      return 'https://polygonscan.com/';
     default:
       return 'https://etherscan.io/';
   }
@@ -16,9 +16,10 @@ const getBaseURL = (network: ChainId) => {
 
 const BASE_URL = getBaseURL(CHAIN_ID);
 
-export const buildEtherscanTxLink = (txHash: string): string => {
+export const buildEtherscanTxLink = (txHash: string, isEthereum?: boolean): string => {
   const path = `tx/${txHash}`;
-  return new URL(path, BASE_URL).toString();
+  console.log({ isEthereum });
+  return new URL(path, getBaseURL(!isEthereum ? MAINNET_CHAIN_ID : CHAIN_ID)).toString();
 };
 
 export const buildEtherscanAddressLink = (address: string): string => {
