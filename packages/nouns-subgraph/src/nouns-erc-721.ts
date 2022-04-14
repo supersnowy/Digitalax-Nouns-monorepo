@@ -55,6 +55,8 @@ export function handleNounCreated(event: NounCreated): void {
                   nounAttributes.value = null;
                   nounAttributes.trait = null;
 
+          
+
                   if (attribute.get('trait_type').kind == JSONValueKind.STRING) {
                     nounAttributes.trait = attribute.get('trait_type').toString();
                   }
