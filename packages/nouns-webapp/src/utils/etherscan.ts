@@ -18,8 +18,7 @@ const BASE_URL = getBaseURL(CHAIN_ID);
 
 export const buildEtherscanTxLink = (txHash: string, isEthereum?: boolean): string => {
   const path = `tx/${txHash}`;
-  console.log({ isEthereum });
-  return new URL(path, getBaseURL(!isEthereum ? MAINNET_CHAIN_ID : CHAIN_ID)).toString();
+  return new URL(path, getBaseURL(isEthereum ? MAINNET_CHAIN_ID : CHAIN_ID)).toString();
 };
 
 export const buildEtherscanAddressLink = (address: string): string => {
