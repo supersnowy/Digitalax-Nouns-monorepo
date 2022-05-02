@@ -169,6 +169,7 @@ const Noun: React.FC<{
                 autoPlay
                 loop
                 muted
+                key={imgPath}
                 className={`${classes.video} ${
                   isEthereum ? classes.ethereumBorder : classes.polygonBorder
                 } ${className}`}
