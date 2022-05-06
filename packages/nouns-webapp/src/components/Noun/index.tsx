@@ -146,7 +146,10 @@ const Noun: React.FC<{
   return (
     <div>
       <div className={`${!zoom ? classes.imgWrapper : classes.imgZoomWrapper} ${wrapperClassName}`}>
-        {currentAuctionId === 9 || currentAuctionId === 12 || currentAuctionId === 13 ? (
+        {currentAuctionId === 9 ||
+        currentAuctionId === 12 ||
+        currentAuctionId === 13 ||
+        currentAuctionId === 34 ? (
           <img
             className={`${classes.img} ${
               isEthereum ? classes.ethereumBorder : classes.polygonBorder
