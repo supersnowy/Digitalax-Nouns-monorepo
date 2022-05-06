@@ -154,7 +154,13 @@ const Noun: React.FC<{
             className={`${classes.img} ${
               isEthereum ? classes.ethereumBorder : classes.polygonBorder
             } ${className}`}
-            src={imgPath ? imgPath : loadingNoun}
+            src={
+              currentAuctionId === 34
+                ? 'https://digitalax.mypinata.cloud/ipfs/QmTi494rfMfBYchZ9ZGGspGySAjR33qCGT41c6sYQ3nyrt'
+                : imgPath
+                ? imgPath
+                : loadingNoun
+            }
             alt={alt}
           />
         ) : (
