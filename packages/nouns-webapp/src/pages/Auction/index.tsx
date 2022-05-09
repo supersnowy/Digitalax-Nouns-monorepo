@@ -50,8 +50,16 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
 
   useEffect(() => {
     if (onDisplayAuction) {
-      if (onDisplayAuction.tokenUri) {
-        fetchFromIpfs(onDisplayAuction.tokenUri || '').then(res => {
+      if (
+        onDisplayAuction.tokenUri ||
+        onDisplayAuction.nounId.toNumber() === 35 ||
+        onDisplayAuction.nounId.toNumber() === 36
+      ) {
+        fetchFromIpfs(
+          onDisplayAuction.tokenUri || onDisplayAuction.nounId.toNumber() === 35
+            ? 'https://digitalax.mypinata.cloud/ipfs/QmNXGL8aWE9Uz97NLXNSCHrKngoUBHb2SZeFsd6ZgcKTP6'
+            : 'https://digitalax.mypinata.cloud/ipfs/QmQB2aVnjwtspHLL1YZVwQwSLJhaehJNAxFEfexQXGriu2',
+        ).then(res => {
           console.log({ res });
           setRealAuction({
             ...onDisplayAuction,
@@ -67,9 +75,31 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
     }
   }, [onDisplayAuctionNounId, isSwitching, onDisplayAuction?.tokenUri]);
 
+  useEffect(() => {
+    if (onDisplayAuction) {
+      if (onDisplayAuction.tokenUri) {
+        fetchFromIpfs(onDisplayAuction.tokenUri || '').then(res => {
+          console.log({ res });
+          setRealAuction({
+            ...onDisplayAuction,
+            name: res.name,
+            description: res.description,
+            image: res?.image,
+            animation: res?.animation_url,
+          });
+        });
+      } else {
+        setRealAuction(onDisplayAuction);
+      }
+    }
+  }, []);
+
   const title =
     reduxChainId === CHAIN_ID ? 'DAO Only Auction | Polygon' : 'Public Auction | Ethereum';
   const isEthereum = reduxChainId === CHAIN_ID ? false : true;
+
+  console.log({ onDisplayAuction });
+  console.log({ realAuction });
 
   return (
     <>
