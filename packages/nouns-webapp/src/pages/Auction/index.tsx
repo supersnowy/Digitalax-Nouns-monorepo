@@ -53,13 +53,16 @@ const AuctionPage: React.FC<AuctionPageProps> = props => {
       if (
         onDisplayAuction.tokenUri ||
         onDisplayAuction.nounId.toNumber() === 35 ||
-        onDisplayAuction.nounId.toNumber() === 36
+        onDisplayAuction.nounId.toNumber() === 36 ||
+        onDisplayAuction.nounId.toNumber() === 43
       ) {
         fetchFromIpfs(
-          onDisplayAuction.tokenUri ||
-            (onDisplayAuction.nounId.toNumber() === 35
-              ? 'https://digitalax.mypinata.cloud/ipfs/QmNXGL8aWE9Uz97NLXNSCHrKngoUBHb2SZeFsd6ZgcKTP6'
-              : 'https://digitalax.mypinata.cloud/ipfs/QmQB2aVnjwtspHLL1YZVwQwSLJhaehJNAxFEfexQXGriu2'),
+          onDisplayAuction.nounId.toNumber() === 43
+            ? 'https://digitalax.mypinata.cloud/ipfs/QmTCKdZCnC176XUgEHJsADY55eQRWfhWhc4hY8AKzh5mu8'
+            : onDisplayAuction.tokenUri ||
+                (onDisplayAuction.nounId.toNumber() === 35
+                  ? 'https://digitalax.mypinata.cloud/ipfs/QmNXGL8aWE9Uz97NLXNSCHrKngoUBHb2SZeFsd6ZgcKTP6'
+                  : 'https://digitalax.mypinata.cloud/ipfs/QmQB2aVnjwtspHLL1YZVwQwSLJhaehJNAxFEfexQXGriu2'),
         ).then(res => {
           console.log({ res });
           setRealAuction({
